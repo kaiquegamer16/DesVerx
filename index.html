@@ -6,164 +6,164 @@
     <title>Modelador 3D</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-       /* Same styles as before, with focused adjustments for the object panel */
-       body {
-           font-family: 'Arial', sans-serif;
-           margin: 0;
-           padding: 0;
-           background-color: #181818;
-           color: #fff;
-           display: flex;
-           flex-direction: column;
-           min-height: 100vh;
-       }
-       @media (min-width: 768px) {
-           body {
-               flex-direction: row;
-           }
-       }
-       .toolbar {
-           background-color: #202020;
-           padding: 8px 15px;
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           border-bottom: 1px solid #333;
-           flex-shrink: 0;
-       }
-       .toolbar-group {
-           display: flex;
-           gap: 5px;
-           align-items: center;
-       }
-       .left-toolbar {
-           display: flex;
-           gap: 10px;
-       }
-       .right-toolbar {
-           display: flex;
-           gap: 10px;
-       }
-       .icon-button {
-           background: transparent;
-           border: 1px solid #444;
-           color: #fff;
-           padding: 6px 10px;
-           text-align: center;
-           text-decoration: none;
-           font-size: 16px;
-           border-radius: 3px;
-           cursor: pointer;
-           transition: background-color 0.2s;
-       }
-       .icon-button:hover {
-           background-color: #333;
-       }
-       .settings-buttons {
-           display: flex;
-           gap: 5px;
-       }
-       .settings-buttons button {
-           background-color: transparent;
-           border: 1px solid #444;
-           color: #fff;
-           padding: 6px 10px;
-           text-align: center;
-           text-decoration: none;
-           font-size: 14px;
-           border-radius: 3px;
-           cursor: pointer;
-           transition: background-color 0.2s;
-       }
-       .settings-buttons button:hover {
-           background-color: #333;
-       }
-       .status-bar {
-           background-color: #202020;
-           padding: 8px 15px;
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           border-top: 1px solid #333;
-           font-size: 14px;
-           flex-shrink: 0;
-       }
-       #scene-container {
-           width: 100%;
-           height: 100%;
-           background-color: #252525;
-           flex: 1;
-       }
-       .sidebar {
-           width: 100%;
-           max-height: 200px;
-           background-color: #202020;
-           padding: 10px;
-           border-bottom: 1px solid #333;
-           display: flex;
-           flex-direction: row;
-           overflow-x: auto;
-           flex-shrink: 0;
-       }
-       @media (min-width: 768px) {
-           .sidebar {
-               width: 180px;
-               max-height: none;
-               flex-direction: column;
-               border-right: 1px solid #333;
-               border-bottom: none;
-               overflow-x: hidden;
+        /* Same styles as before, with focused adjustments for the object panel */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #181818;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        @media (min-width: 768px) {
+            body {
+                flex-direction: row;
+            }
+        }
+        .toolbar {
+            background-color: #202020;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            flex-shrink: 0;
+        }
+        .toolbar-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .left-toolbar {
+            display: flex;
+            gap: 10px;
+        }
+        .right-toolbar {
+            display: flex;
+            gap: 10px;
+        }
+        .icon-button {
+            background: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .icon-button:hover {
+            background-color: #333;
+        }
+        .settings-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .settings-buttons button {
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .settings-buttons button:hover {
+            background-color: #333;
+        }
+        .status-bar {
+            background-color: #202020;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #333;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        #scene-container {
+            width: 100%;
+            height: 100%;
+            background-color: #252525;
+            flex: 1;
+        }
+        .sidebar {
+            width: 100%;
+            max-height: 200px;
+            background-color: #202020;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                width: 180px;
+                max-height: none;
+                flex-direction: column;
+                border-right: 1px solid #333;
+                border-bottom: none;
+                overflow-x: hidden;
 
-           }
-       }
-       .sidebar h3 {
-           font-size: 14px;
-           margin: 0 0 10px 0;
-           border-bottom: 1px solid #333;
-           padding-bottom: 5px;
-           white-space: nowrap;
-       }
-       .sidebar-group {
-           display: flex;
-           flex-direction: row;
-           gap: 5px;
-           white-space: nowrap;
-       }
-       @media (min-width: 768px) {
-           .sidebar-group {
-               flex-direction: column;
-               padding: 5px;
-           }
-       }
-       .sidebar-button {
-           background-color: transparent;
-           border: 1px solid #444;
-           color: #fff;
-           padding: 6px 10px;
-           text-align: left;
-           text-decoration: none;
-           font-size: 14px;
-           border-radius: 3px;
-           cursor: pointer;
-           transition: background-color 0.2s;
-           white-space: nowrap;
-       }
-       .sidebar-button:hover {
-           background-color: #333;
-       }
-       /* Object panel styles updated */
-       .object-panel-container {
-           background-color: #202020;
-           border-left: 1px solid #333;
-           display: flex;
-           flex-direction: column;
-           max-height: 100vh;
-           overflow-y: auto;
-           width: 250px; /* Fixed Width */
-           box-sizing: border-box;
-            align-items: center; /* Center items horizontally */
-       }
-          @media (max-width: 767px){
+            }
+        }
+        .sidebar h3 {
+            font-size: 14px;
+            margin: 0 0 10px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            white-space: nowrap;
+        }
+        .sidebar-group {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        @media (min-width: 768px) {
+            .sidebar-group {
+                flex-direction: column;
+                padding: 5px;
+            }
+        }
+        .sidebar-button {
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: left;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+        .sidebar-button:hover {
+            background-color: #333;
+        }
+        /* Object panel styles updated */
+        .object-panel-container {
+            background-color: #202020;
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            max-height: 100vh;
+            overflow-y: auto;
+            width: 250px; /* Fixed Width */
+            box-sizing: border-box;
+             align-items: center; /* Center items horizontally */
+        }
+           @media (max-width: 767px){
             .object-panel-container {
                  max-height: 500px;
                width: 100%;
@@ -225,6 +225,79 @@
        .object-list-item:hover {
            background-color: #333;
        }
+        /* Parts Panel Styles */
+       .parts-panel-container {
+            background-color: #202020;
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            max-height: 100vh;
+            overflow-y: auto;
+            width: 200px; /* Fixed Width */
+            box-sizing: border-box;
+            align-items: center; /* Center items horizontally */
+         }
+         @media (max-width: 767px){
+            .parts-panel-container {
+                 max-height: 500px;
+                 width: 100%;
+            }
+         }
+        .parts-panel-container h3 {
+           font-size: 14px;
+           margin: 10px 0;
+           border-bottom: 1px solid #333;
+           padding-bottom: 5px;
+           text-align: center; /* Center the title */
+           width: 100%; /* Ensure it takes full width of the container*/
+            margin-left: 0;
+       }
+         .parts-list-container {
+            padding: 5px 10px;
+             display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            box-sizing: border-box;
+            align-items: center;
+            width: 100%;
+
+         }
+        .parts-list-item{
+           padding: 8px;
+           cursor: pointer;
+           border-bottom: 1px solid #444;
+           display: flex;
+           justify-content: space-between; /* Keep buttons on the far right*/
+           align-items: center;
+           box-sizing: border-box;
+           width: 100%;
+        }
+        .parts-list-item span{
+            margin-left: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+             flex-grow: 1;/* Push the name to the left */
+        }
+       .parts-list-item button {
+             background: transparent;
+              border: none;
+             color: #fff;
+             cursor: pointer;
+            margin: 0 2px;
+             padding: 2px 5px;
+             font-size: 12px;
+       }
+          .parts-list-item button:hover{
+                 background: #333;
+          }
+       .parts-list-item.selected {
+           background-color: #333;
+       }
+        .parts-list-item:hover {
+            background-color: #333;
+        }
        .main-content {
            display: flex;
            flex-direction: column;
@@ -484,23 +557,29 @@
              <ul id="object-list">
             </ul>
         </div>
-        <div class="material-buttons-container">
-           <h3>Materials</h3>
-           <div class="material-buttons">
-             <button onclick="changeMaterial('basic')">Basic</button>
-             <button onclick="changeMaterial('lambert')">Lambert</button>
-             <button onclick="changeMaterial('phong')">Phong</button>
-             </div>
+         <div class="material-buttons-container">
+            <h3>Materials</h3>
+            <div class="material-buttons">
+                <button onclick="changeMaterial('basic')">Basic</button>
+                <button onclick="changeMaterial('lambert')">Lambert</button>
+                <button onclick="changeMaterial('phong')">Phong</button>
+            </div>
          </div>
-      <div class="texture-buttons">
-       <button onclick="openAlbedoTextureImporter()">Albedo</button>
-    </div>
-   <div id="albedo-preview" style="width: 50px; height: 50px; margin: 10px; background-color: #555; border: 1px solid #444;"></div>
-       <input type="file" id="albedo-texture" accept="image/*" style="display:none" onchange="loadTexture('albedo')" />
-           <div style="display: flex; flex-direction: column; align-items: center;">
-               <label for="object-color-picker" style="font-size: 14px; margin-bottom: 5px; margin-top: 5px;">Color</label>
-               <input type="color" id="object-color-picker" value="#ffffff" style="background-color: #333; border: 1px solid #444; color: #fff; padding: 5px;" oninput="changeObjectColor()">
-             </div>
+       <div class="texture-buttons">
+            <button onclick="openAlbedoTextureImporter()">Albedo</button>
+        </div>
+       <div id="albedo-preview" style="width: 50px; height: 50px; margin: 10px; background-color: #555; border: 1px solid #444;"></div>
+        <input type="file" id="albedo-texture" accept="image/*" style="display:none" onchange="loadTexture('albedo')" />
+       <div style="display: flex; flex-direction: column; align-items: center;">
+            <label for="object-color-picker" style="font-size: 14px; margin-bottom: 5px; margin-top: 5px;">Color</label>
+            <input type="color" id="object-color-picker" value="#ffffff" style="background-color: #333; border: 1px solid #444; color: #fff; padding: 5px;" oninput="changeObjectColor()">
+        </div>
+    </aside>
+     <aside class="parts-panel-container" id="parts-panel" style="display: none;">
+         <h3>Parts</h3>
+       <div class="parts-list-container">
+            <ul id="parts-list"></ul>
+        </div>
     </aside>
     <div id="code-editor-container">
         <textarea id="code-editor"></textarea>
@@ -528,7 +607,7 @@
     <script src="js/OBJLoader.js"></script>
     <script src="js/TransformControls.js"></script>
     <script>
-       const scene = new THREE.Scene();
+        const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         const sceneContainer = document.getElementById('scene-container');
@@ -560,7 +639,7 @@
             reader.readAsDataURL(file);
             skyboxTextureImporter.style.display = 'none';
         }
-         function fitCamera(){
+        function fitCamera(){
             if(!objects || objects.length === 0) return;
             const box = new THREE.Box3().setFromObject(scene);
             const size = box.getSize(new THREE.Vector3());
@@ -579,10 +658,13 @@
         }
         let objects = [];
         let selectedObject = null;
+        let selectedPart = null;
         const objectList = document.getElementById('object-list');
-         function updateObjectList(){
+        const partsPanel = document.getElementById('parts-panel');
+        const partsList = document.getElementById('parts-list');
+        function updateObjectList(){
             objectList.innerHTML = '';
-            const allObjects = [...objects, ...scene.children.filter(child => child.isLight || child.type === 'Camera')];
+             const allObjects = [...objects, ...scene.children.filter(child => child.isLight || child.type === 'Camera')];
             allObjects.forEach((obj, index) => {
                 const listItem = document.createElement('li');
                 listItem.classList.add('object-list-item');
@@ -608,20 +690,21 @@
                     removeObject(obj);
                 });
                 listItem.appendChild(visibilityButton);
-                 listItem.appendChild(deleteButton);
+                listItem.appendChild(deleteButton);
                 objectList.appendChild(listItem);
             });
         }
-         function removeObject(obj) {
+        function removeObject(obj) {
             const index = objects.indexOf(obj);
             if (index > -1) {
-                scene.remove(obj);
+                        scene.remove(obj);
                 objects.splice(index, 1);
                 if(selectedObject === obj){
                    if(transformControls.object){
                         transformControls.detach(transformControls.object)
                     }
                     selectedObject = null;
+                     partsPanel.style.display = 'none';
                 }
                 updateObjectList();
             }
@@ -633,10 +716,11 @@
                     }
                     selectedObject = null;
                 }
+                 partsPanel.style.display = 'none';
                 updateObjectList()
             }
         }
-       function selectObject(obj){
+        function selectObject(obj){
             selectedObject = obj;
             updateObjectList();
             codeEditor.value = obj.script || '';
@@ -646,11 +730,72 @@
             if(selectedObject)
                  transformControls.attach(selectedObject);
             if(selectedObject.material){
-              document.getElementById('object-color-picker').value = `#${selectedObject.material.color.getHexString()}`
+                document.getElementById('object-color-picker').value = `#${selectedObject.material.color.getHexString()}`
             }
             if(selectedObject.isLight){
                  document.getElementById('object-color-picker').value = `#${selectedObject.color.getHexString()}`;
             }
+           updatePartsList();
+        }
+       function updatePartsList(){
+           partsList.innerHTML = '';
+           if(selectedObject){
+              if(selectedObject.children && selectedObject.children.length > 0){
+                    partsPanel.style.display = 'flex';
+                    selectedObject.children.forEach((part, index) => {
+                        if (part.isMesh){
+                           const listItem = document.createElement('li');
+                          listItem.classList.add('parts-list-item');
+                            listItem.innerHTML = `<span>${part.name || `Part ${index + 1}`}</span>`;
+                            listItem.addEventListener('click', () => {
+                             selectPart(part)
+                           });
+                           if(part === selectedPart){
+                               listItem.classList.add('selected')
+                             }
+                             partsList.appendChild(listItem);
+                         }
+                    });
+                }
+             else if(selectedObject.type === 'Mesh' && selectedObject.geometry && selectedObject.geometry.attributes && selectedObject.geometry.attributes.position){
+                    partsPanel.style.display = 'flex';
+                   const vertexCount = selectedObject.geometry.attributes.position.count;
+                    if(vertexCount < 2000) {
+                          for(let i = 0; i < vertexCount; i++) {
+                            const listItem = document.createElement('li');
+                            listItem.classList.add('parts-list-item');
+                            listItem.innerHTML = `<span>Vertex ${i + 1}</span>`;
+                            listItem.addEventListener('click', () => {
+                            selectPart(i)
+                            });
+                              if(i === selectedPart){
+                                  listItem.classList.add('selected');
+                             }
+                            partsList.appendChild(listItem)
+                        }
+                 }
+               else {
+                        const listItem = document.createElement('li');
+                           listItem.classList.add('parts-list-item');
+                             listItem.innerHTML = `<span>${selectedObject.name}</span>`;
+                             listItem.addEventListener('click', () => {
+                               selectPart(selectedObject)
+                            });
+                               if(selectedObject === selectedPart){
+                                  listItem.classList.add('selected');
+                             }
+                           partsList.appendChild(listItem)
+                 }
+            } else{
+                  partsPanel.style.display = 'none';
+            }
+            } else{
+                  partsPanel.style.display = 'none';
+            }
+         }
+        function selectPart(part){
+           selectedPart = part;
+           updatePartsList();
         }
          function copyObject(){
              if(selectedObject){
@@ -699,7 +844,7 @@
             cube.name = `Cube ${objects.length + 1}`;
             scene.add(cube);
             objects.push(cube);
-                        updateObjectList();
+            updateObjectList();
         }
          function addSphere() {
             const geometry = new THREE.SphereGeometry(0.7, 32, 32);
@@ -763,21 +908,52 @@
             if(!selectedObject) return;
             let material;
             if(materialType === 'basic'){
-                material = new THREE.MeshBasicMaterial({ color: selectedObject.material.color })
+                 if(selectedPart && selectedPart.material){
+                    material = new THREE.MeshBasicMaterial({ color: selectedPart.material.color })
+                  }
+                 else if (selectedPart && typeof selectedPart === 'number'){
+                      material = new THREE.MeshBasicMaterial({ color: document.getElementById('object-color-picker').value })
+                 }
+                 else {
+                   material = new THREE.MeshBasicMaterial({ color: selectedObject.material.color })
+                 }
             }
             if(materialType === 'lambert'){
-                material = new THREE.MeshLambertMaterial({ color: selectedObject.material.color })
+                if(selectedPart && selectedPart.material){
+                    material = new THREE.MeshLambertMaterial({ color: selectedPart.material.color })
+                  }
+                 else if (selectedPart && typeof selectedPart === 'number'){
+                      material = new THREE.MeshLambertMaterial({ color: document.getElementById('object-color-picker').value })
+                 }
+                  else {
+                    material = new THREE.MeshLambertMaterial({ color: selectedObject.material.color })
+                 }
             }
             if(materialType === 'phong'){
-                material = new THREE.MeshPhongMaterial({ color: selectedObject.material.color });
+                  if(selectedPart && selectedPart.material){
+                        material = new THREE.MeshPhongMaterial({ color: selectedPart.material.color });
+                  }
+                 else if (selectedPart && typeof selectedPart === 'number'){
+                      material = new THREE.MeshPhongMaterial({ color: document.getElementById('object-color-picker').value })
+                 }
+                  else {
+                    material = new THREE.MeshPhongMaterial({ color: selectedObject.material.color });
+                 }
             }
-            selectedObject.material = material;
+           if(selectedPart && selectedPart.material){
+               selectedPart.material = material;
+           }
+           else if(typeof selectedPart === 'number'){
+            }
+           else {
+              selectedObject.material = material;
+           }
         }
        let albedoTexture = null;
         function openAlbedoTextureImporter() {
             document.getElementById('albedo-texture').click();
         }
-       function loadTexture(textureType){
+        function loadTexture(textureType){
             const input = document.getElementById(textureType + '-texture');
             const file = input.files[0];
             if(!file) return;
@@ -788,18 +964,44 @@
                     albedoTexture = texture;
                     document.getElementById('albedo-preview').style.backgroundImage = `url(${event.target.result})`;
                     document.getElementById('albedo-preview').style.backgroundSize = 'cover';
-                 }
-                 if(selectedObject) {
-                    if (selectedObject.material.type === 'MeshBasicMaterial') {
-                        selectedObject.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
-                    }
-                    else if (selectedObject.material.type === 'MeshLambertMaterial') {
-                        selectedObject.material = new THREE.MeshLambertMaterial({ map: albedoTexture});
-                    }
-                    else if (selectedObject.material.type === 'MeshPhongMaterial') {
-                        selectedObject.material = new THREE.MeshPhongMaterial({ map: albedoTexture});
-                    }
                 }
+                 if (selectedObject) {
+                   function applyTexture(obj){
+                       if(obj.material){
+                            if (obj.material.type === 'MeshBasicMaterial') {
+                                 obj.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
+                             }
+                            else if (obj.material.type === 'MeshLambertMaterial') {
+                                obj.material = new THREE.MeshLambertMaterial({ map: albedoTexture});
+                            }
+                            else if (obj.material.type === 'MeshPhongMaterial') {
+                                 obj.material = new THREE.MeshPhongMaterial({ map: albedoTexture});
+                             }
+                        }
+                     if (obj.children && obj.children.length > 0){
+                         obj.children.forEach(child => {
+                            applyTexture(child)
+                          })
+                        }
+                    }
+                    if(selectedPart && selectedPart.material){
+                         if (selectedPart.material.type === 'MeshBasicMaterial') {
+                             selectedPart.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
+                         }
+                        else if (selectedPart.material.type === 'MeshLambertMaterial') {
+                           selectedPart.material = new THREE.MeshLambertMaterial({ map: albedoTexture});
+                         }
+                        else if (selectedPart.material.type === 'MeshPhongMaterial') {
+                           selectedPart.material = new THREE.MeshPhongMaterial({ map: albedoTexture});
+                         }
+                    }
+                     else if (typeof selectedPart === 'number'){
+
+                    }
+                    else {
+                        applyTexture(selectedObject)
+                    }
+                  }
             };
             reader.readAsDataURL(file);
         }
@@ -833,11 +1035,17 @@
          function changeObjectColor() {
             if (selectedObject) {
                 const color = document.getElementById('object-color-picker').value;
-               if (selectedObject.material) {
-                   selectedObject.material.color.set(color);
+              if(selectedPart && selectedPart.material){
+                    selectedPart.material.color.set(color)
+                }
+                 else if(selectedPart && typeof selectedPart === 'number'){
+
+                }
+                else if (selectedObject.material) {
+                    selectedObject.material.color.set(color);
                 }
                  if(selectedObject.isLight){
-                  selectedObject.color.set(color);
+                   selectedObject.color.set(color);
                 }
             }
         }
@@ -852,9 +1060,9 @@
                     reader.onload = (event) => {
                         objLoader.load(event.target.result, (obj) => {
                             obj.name = `OBJ ${objects.length + 1}`;
-                            scene.add(obj);
-                            objects.push(obj);
-                            updateObjectList();
+                             scene.add(obj);
+                             objects.push(obj);
+                             updateObjectList();
                         });
                     };
                     reader.readAsDataURL(file);
