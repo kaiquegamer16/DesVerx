@@ -6,394 +6,394 @@
     <title>Modelador 3D</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Same styles as before, with focused adjustments for the object panel */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #181818;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        @media (min-width: 768px) {
-            body {
-                flex-direction: row;
-            }
-        }
-        .toolbar {
-            background-color: #202020;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #333;
-            flex-shrink: 0;
-        }
-        .toolbar-group {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        .left-toolbar {
-            display: flex;
-            gap: 10px;
-        }
-        .right-toolbar {
-            display: flex;
-            gap: 10px;
-        }
-        .icon-button {
-            background: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .icon-button:hover {
-            background-color: #333;
-        }
-        .settings-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        .settings-buttons button {
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .settings-buttons button:hover {
-            background-color: #333;
-        }
-        .status-bar {
-            background-color: #202020;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #333;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        #scene-container {
-            width: 100%;
-            height: 100%;
-            background-color: #252525;
-            flex: 1;
-        }
-        .sidebar {
-            width: 100%;
-            max-height: 200px;
-            background-color: #202020;
-            padding: 10px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            flex-direction: row;
-            overflow-x: auto;
-            flex-shrink: 0;
-        }
-        @media (min-width: 768px) {
-            .sidebar {
-                width: 180px;
-                max-height: none;
-                flex-direction: column;
-                border-right: 1px solid #333;
-                border-bottom: none;
-                overflow-x: hidden;
-
-            }
-        }
-        .sidebar h3 {
-            font-size: 14px;
-            margin: 0 0 10px 0;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-            white-space: nowrap;
-        }
-        .sidebar-group {
-            display: flex;
-            flex-direction: row;
-            gap: 5px;
-            white-space: nowrap;
-        }
-        @media (min-width: 768px) {
-            .sidebar-group {
-                flex-direction: column;
-                padding: 5px;
-            }
-        }
-        .sidebar-button {
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: left;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-        .sidebar-button:hover {
-            background-color: #333;
-        }
-        /* Object panel styles updated */
-        .object-panel-container {
-            background-color: #202020;
-            border-left: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            max-height: 100vh;
-            overflow-y: auto;
-            width: 250px; /* Fixed Width */
-            box-sizing: border-box;
-             align-items: center; /* Center items horizontally */
-        }
-           @media (max-width: 767px){
-             .object-panel-container {
-                  max-height: 500px;
-                width: 100%;
-             }
-          }
-         .object-panel-container h3 {
-            font-size: 14px;
-            margin: 10px 0;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-            text-align: center; /* Center the title */
-            width: 100%; /* Ensure it takes full width of the container*/
-           margin-left: 0;
-        }
-       .object-list-container {
-            padding: 5px 10px;
-             display: flex;
-            flex-direction: column;
-            max-height: calc(100vh - 120px);
-           overflow-y: auto;
-           box-sizing: border-box;
-           align-items: center;
-           width: 100%;
-
-        }
-          .object-list-item{
-            padding: 8px;
-            cursor: pointer;
-            border-bottom: 1px solid #444;
-            display: flex;
-            justify-content: space-between; /* Keep buttons on the far right*/
-            align-items: center;
-            box-sizing: border-box;
-             width: 100%;
-            }
-        .object-list-item span{
-            margin-left: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex-grow: 1;/* Push the name to the left */
-        }
-       .object-list-item button {
-             background: transparent;
-              border: none;
-             color: #fff;
-             cursor: pointer;
-           margin: 0 2px;
-             padding: 2px 5px;
-             font-size: 12px;
+       /* Same styles as before, with focused adjustments for the object panel */
+       body {
+           font-family: 'Arial', sans-serif;
+           margin: 0;
+           padding: 0;
+           background-color: #181818;
+           color: #fff;
+           display: flex;
+           flex-direction: column;
+           min-height: 100vh;
        }
-          .object-list-item button:hover{
-                background: #333;
-         }
+       @media (min-width: 768px) {
+           body {
+               flex-direction: row;
+           }
+       }
+       .toolbar {
+           background-color: #202020;
+           padding: 8px 15px;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           border-bottom: 1px solid #333;
+           flex-shrink: 0;
+       }
+       .toolbar-group {
+           display: flex;
+           gap: 5px;
+           align-items: center;
+       }
+       .left-toolbar {
+           display: flex;
+           gap: 10px;
+       }
+       .right-toolbar {
+           display: flex;
+           gap: 10px;
+       }
+       .icon-button {
+           background: transparent;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 6px 10px;
+           text-align: center;
+           text-decoration: none;
+           font-size: 16px;
+           border-radius: 3px;
+           cursor: pointer;
+           transition: background-color 0.2s;
+       }
+       .icon-button:hover {
+           background-color: #333;
+       }
+       .settings-buttons {
+           display: flex;
+           gap: 5px;
+       }
+       .settings-buttons button {
+           background-color: transparent;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 6px 10px;
+           text-align: center;
+           text-decoration: none;
+           font-size: 14px;
+           border-radius: 3px;
+           cursor: pointer;
+           transition: background-color 0.2s;
+       }
+       .settings-buttons button:hover {
+           background-color: #333;
+       }
+       .status-bar {
+           background-color: #202020;
+           padding: 8px 15px;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           border-top: 1px solid #333;
+           font-size: 14px;
+           flex-shrink: 0;
+       }
+       #scene-container {
+           width: 100%;
+           height: 100%;
+           background-color: #252525;
+           flex: 1;
+       }
+       .sidebar {
+           width: 100%;
+           max-height: 200px;
+           background-color: #202020;
+           padding: 10px;
+           border-bottom: 1px solid #333;
+           display: flex;
+           flex-direction: row;
+           overflow-x: auto;
+           flex-shrink: 0;
+       }
+       @media (min-width: 768px) {
+           .sidebar {
+               width: 180px;
+               max-height: none;
+               flex-direction: column;
+               border-right: 1px solid #333;
+               border-bottom: none;
+               overflow-x: hidden;
 
-        .object-list-item.selected {
-            background-color: #333;
-        }
-        .object-list-item:hover {
-            background-color: #333;
-        }
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            position: relative;
-        }
-       .material-buttons-container {
-            display: flex;
-            flex-direction: column;
-             width: 100%;
-             box-sizing: border-box;
-             padding: 5px 10px;
-        }
-          .material-buttons-container h3{
-              font-size: 14px;
-             margin: 10px 0;
-            border-bottom: 1px solid #333;
+           }
+       }
+       .sidebar h3 {
+           font-size: 14px;
+           margin: 0 0 10px 0;
+           border-bottom: 1px solid #333;
+           padding-bottom: 5px;
+           white-space: nowrap;
+       }
+       .sidebar-group {
+           display: flex;
+           flex-direction: row;
+           gap: 5px;
+           white-space: nowrap;
+       }
+       @media (min-width: 768px) {
+           .sidebar-group {
+               flex-direction: column;
+               padding: 5px;
+           }
+       }
+       .sidebar-button {
+           background-color: transparent;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 6px 10px;
+           text-align: left;
+           text-decoration: none;
+           font-size: 14px;
+           border-radius: 3px;
+           cursor: pointer;
+           transition: background-color 0.2s;
+           white-space: nowrap;
+       }
+       .sidebar-button:hover {
+           background-color: #333;
+       }
+       /* Object panel styles updated */
+       .object-panel-container {
+           background-color: #202020;
+           border-left: 1px solid #333;
+           display: flex;
+           flex-direction: column;
+           max-height: 100vh;
+           overflow-y: auto;
+           width: 250px; /* Fixed Width */
+           box-sizing: border-box;
+            align-items: center; /* Center items horizontally */
+       }
+          @media (max-width: 767px){
+            .object-panel-container {
+                 max-height: 500px;
+               width: 100%;
+            }
+         }
+        .object-panel-container h3 {
+           font-size: 14px;
+           margin: 10px 0;
+           border-bottom: 1px solid #333;
            padding-bottom: 5px;
            text-align: center; /* Center the title */
+           width: 100%; /* Ensure it takes full width of the container*/
+          margin-left: 0;
+       }
+      .object-list-container {
+           padding: 5px 10px;
+            display: flex;
+           flex-direction: column;
+           max-height: calc(100vh - 120px);
+          overflow-y: auto;
+          box-sizing: border-box;
+          align-items: center;
           width: 100%;
-           margin-left: 0;
-        }
-       .material-buttons {
-            display: flex;
-           flex-wrap: wrap;
-            gap: 5px;
-            box-sizing: border-box;
-            padding: 0 5px;
 
-        }
-        .material-buttons button{
-            background-color: transparent;
-            border: 1px solid #444;
+       }
+         .object-list-item{
+           padding: 8px;
+           cursor: pointer;
+           border-bottom: 1px solid #444;
+           display: flex;
+           justify-content: space-between; /* Keep buttons on the far right*/
+           align-items: center;
+           box-sizing: border-box;
+            width: 100%;
+           }
+       .object-list-item span{
+           margin-left: 5px;
+           white-space: nowrap;
+           overflow: hidden;
+           text-overflow: ellipsis;
+           flex-grow: 1;/* Push the name to the left */
+       }
+      .object-list-item button {
+            background: transparent;
+             border: none;
             color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
             cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
+          margin: 0 2px;
+            padding: 2px 5px;
+            font-size: 12px;
+      }
+         .object-list-item button:hover{
+               background: #333;
+        }
+
+       .object-list-item.selected {
+           background-color: #333;
+       }
+       .object-list-item:hover {
+           background-color: #333;
+       }
+       .main-content {
+           display: flex;
+           flex-direction: column;
+           flex: 1;
+           position: relative;
+       }
+      .material-buttons-container {
+           display: flex;
+           flex-direction: column;
+            width: 100%;
             box-sizing: border-box;
-        }
-        .material-buttons button:hover{
-            background-color: #333;
-        }
-        .texture-buttons{
-            display: flex;
-            gap: 5px;
-            margin-top: 10px;
-             padding-left: 5px; /* Add padding to the group */
-        }
-        .texture-buttons button {
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-            box-sizing: border-box;
-        }
-        .texture-buttons button:hover {
-            background-color: #333;
-        }
-        #code-editor {
-            width: 80%;
-            height: 80%;
-            background-color: #333;
-            color: #fff;
-            border: 1px solid #444;
-            padding: 10px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        @media (max-width: 767px) {
-            #code-editor {
-                width: 95%;
-                height: 60%;
-            }
-        }
-        #code-editor:focus{
-            outline: none;
-        }
-        #code-editor-container {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #202020;
-            border: 1px solid #444;
-            padding: 10px;
-            z-index: 1000;
-        }
-        #code-editor-buttons{
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        #code-editor-buttons button {
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #code-editor-buttons button:hover {
-            background-color: #333;
-        }
-        #scene-settings-container {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #202020;
-            border: 1px solid #444;
-            padding: 10px;
-            z-index: 1000;
-        }
-        #scene-settings-container label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        #scene-settings-container input[type="color"]{
-            background-color: #333;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 5px;
-        }
-        #scene-settings-container button {
-            margin-top: 10px;
-        }
-        .transform-controls-buttons{
-            display: flex;
-            gap: 5px;
-            position: absolute;
-            top: 10px;
-            left: 10px;
-        }
-        .transform-controls-buttons button{
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-            box-sizing: border-box;
-        }
-        .transform-controls-buttons button:hover{
-            background-color: #333;
-        }
+            padding: 5px 10px;
+       }
+         .material-buttons-container h3{
+             font-size: 14px;
+            margin: 10px 0;
+           border-bottom: 1px solid #333;
+          padding-bottom: 5px;
+          text-align: center; /* Center the title */
+         width: 100%;
+          margin-left: 0;
+       }
+      .material-buttons {
+           display: flex;
+          flex-wrap: wrap;
+           gap: 5px;
+           box-sizing: border-box;
+           padding: 0 5px;
+
+       }
+       .material-buttons button{
+           background-color: transparent;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 6px 10px;
+           text-align: center;
+           text-decoration: none;
+           font-size: 14px;
+           border-radius: 3px;
+           cursor: pointer;
+           transition: background-color 0.2s;
+           white-space: nowrap;
+           box-sizing: border-box;
+       }
+       .material-buttons button:hover{
+           background-color: #333;
+       }
+       .texture-buttons{
+           display: flex;
+           gap: 5px;
+           margin-top: 10px;
+            padding-left: 5px; /* Add padding to the group */
+       }
+       .texture-buttons button {
+           background-color: transparent;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 6px 10px;
+           text-align: center;
+           text-decoration: none;
+           font-size: 14px;
+           border-radius: 3px;
+           cursor: pointer;
+           transition: background-color 0.2s;
+           white-space: nowrap;
+           box-sizing: border-box;
+       }
+       .texture-buttons button:hover {
+           background-color: #333;
+       }
+       #code-editor {
+           width: 80%;
+           height: 80%;
+           background-color: #333;
+           color: #fff;
+           border: 1px solid #444;
+           padding: 10px;
+           box-sizing: border-box;
+           font-size: 14px;
+       }
+       @media (max-width: 767px) {
+           #code-editor {
+               width: 95%;
+               height: 60%;
+           }
+       }
+       #code-editor:focus{
+           outline: none;
+       }
+       #code-editor-container {
+           display: none;
+           position: absolute;
+           top: 50%;
+           left: 50%;
+           transform: translate(-50%, -50%);
+           background-color: #202020;
+           border: 1px solid #444;
+           padding: 10px;
+           z-index: 1000;
+       }
+       #code-editor-buttons{
+           display: flex;
+           gap: 10px;
+           margin-top: 10px;
+       }
+       #code-editor-buttons button {
+           background-color: transparent;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 6px 10px;
+           text-align: center;
+           text-decoration: none;
+           font-size: 14px;
+           border-radius: 3px;
+           cursor: pointer;
+           transition: background-color 0.2s;
+       }
+       #code-editor-buttons button:hover {
+           background-color: #333;
+       }
+       #scene-settings-container {
+           display: none;
+           position: absolute;
+           top: 50%;
+           left: 50%;
+           transform: translate(-50%, -50%);
+           background-color: #202020;
+           border: 1px solid #444;
+           padding: 10px;
+           z-index: 1000;
+       }
+       #scene-settings-container label {
+           display: block;
+           font-size: 14px;
+           margin-bottom: 5px;
+       }
+       #scene-settings-container input[type="color"]{
+           background-color: #333;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 5px;
+       }
+       #scene-settings-container button {
+           margin-top: 10px;
+       }
+       .transform-controls-buttons{
+           display: flex;
+           gap: 5px;
+           position: absolute;
+           top: 10px;
+           left: 10px;
+       }
+       .transform-controls-buttons button{
+           background-color: transparent;
+           border: 1px solid #444;
+           color: #fff;
+           padding: 6px 10px;
+           text-align: center;
+           text-decoration: none;
+           font-size: 14px;
+           border-radius: 3px;
+           cursor: pointer;
+           transition: background-color 0.2s;
+           white-space: nowrap;
+           box-sizing: border-box;
+       }
+       .transform-controls-buttons button:hover{
+           background-color: #333;
+       }
     </style>
 </head>
 <body>
@@ -469,9 +469,10 @@
         </div>
         <footer class="status-bar">
             <div style="display: flex; gap: 10px;">
-                 <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;" onclick="loadScene()"><i class="fas fa-file"></i></button>
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;" onclick="copyObject()"><i class="fas fa-clone"></i></button>
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;" onclick="saveScene()"><i class="fas fa-file"></i></button>
                 <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;"><i class="fas fa-eye"></i></button>
-                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px; color: red;"><i class="fas fa-trash"></i></button>
+                 <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px; color: red;" onclick="removeObject(selectedObject)"><i class="fas fa-trash"></i></button>
             </div>
             <span>Rendered <span id="fps-counter">30</span> fps</span>
         </footer>
@@ -527,8 +528,8 @@
     <script src="js/OBJLoader.js"></script>
     <script src="js/TransformControls.js"></script>
     <script>
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / 500, 0.1, 1000);
+       const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         const sceneContainer = document.getElementById('scene-container');
         renderer.setSize(sceneContainer.offsetWidth, sceneContainer.offsetHeight);
@@ -579,7 +580,7 @@
         let objects = [];
         let selectedObject = null;
         const objectList = document.getElementById('object-list');
-        function updateObjectList(){
+         function updateObjectList(){
             objectList.innerHTML = '';
             const allObjects = [...objects, ...scene.children.filter(child => child.isLight || child.type === 'Camera')];
             allObjects.forEach((obj, index) => {
@@ -601,22 +602,25 @@
                     visibilityButton.innerHTML = obj.visible ? `<i class="fas fa-eye"></i>` : `<i class="fas fa-eye-slash"></i>`;
                 });
                 const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'x';
+                deleteButton.innerHTML = '<i class="fas fa-trash" style="color: red;"></i>';
                 deleteButton.addEventListener('click', (e) => {
                     e.stopPropagation();
                     removeObject(obj);
                 });
                 listItem.appendChild(visibilityButton);
-                listItem.appendChild(deleteButton);
+                 listItem.appendChild(deleteButton);
                 objectList.appendChild(listItem);
             });
         }
-        function removeObject(obj) {
+         function removeObject(obj) {
             const index = objects.indexOf(obj);
             if (index > -1) {
                 scene.remove(obj);
                 objects.splice(index, 1);
                 if(selectedObject === obj){
+                   if(transformControls.object){
+                        transformControls.detach(transformControls.object)
+                    }
                     selectedObject = null;
                 }
                 updateObjectList();
@@ -624,16 +628,19 @@
             if(obj.isLight || obj.type === 'Camera'){
                 scene.remove(obj)
                 if(selectedObject === obj){
+                    if(transformControls.object){
+                        transformControls.detach(transformControls.object)
+                    }
                     selectedObject = null;
                 }
                 updateObjectList()
             }
         }
-        function selectObject(obj){
+       function selectObject(obj){
             selectedObject = obj;
             updateObjectList();
             codeEditor.value = obj.script || '';
-            if(transformControls.object){
+             if(transformControls.object){
                  transformControls.detach(transformControls.object)
              }
             if(selectedObject)
@@ -645,6 +652,45 @@
                  document.getElementById('object-color-picker').value = `#${selectedObject.color.getHexString()}`;
             }
         }
+         function copyObject(){
+             if(selectedObject){
+                  let newObject;
+                if (selectedObject.type === 'Mesh') {
+                       let geometry;
+                        if(selectedObject.geometry.type === 'BoxGeometry') {
+                             geometry = new THREE.BoxGeometry().fromJSON(selectedObject.geometry.toJSON());
+                        }
+                        else if(selectedObject.geometry.type === 'SphereGeometry') {
+                            geometry = new THREE.SphereGeometry().fromJSON(selectedObject.geometry.toJSON());
+                        }
+                         else if(selectedObject.geometry.type === 'TorusGeometry') {
+                             geometry = new THREE.TorusGeometry().fromJSON(selectedObject.geometry.toJSON());
+                        }
+                         else if(selectedObject.geometry.type === 'PlaneGeometry') {
+                             geometry = new THREE.PlaneGeometry().fromJSON(selectedObject.geometry.toJSON());
+                        }
+                   const material = selectedObject.material.clone();
+                   newObject = new THREE.Mesh(geometry, material);
+                }
+                else if(selectedObject.isLight) {
+                      if(selectedObject.type === 'DirectionalLight')
+                       newObject = new THREE.DirectionalLight().copy(selectedObject);
+                     else if(selectedObject.type === 'PointLight')
+                         newObject = new THREE.PointLight().copy(selectedObject);
+                    else if(selectedObject.type === 'AmbientLight')
+                         newObject = new THREE.AmbientLight().copy(selectedObject)
+                      else if(selectedObject.type === 'SpotLight')
+                         newObject = new THREE.SpotLight().copy(selectedObject);
+                }
+               if(newObject){
+                    newObject.position.set(selectedObject.position.x + 1, selectedObject.position.y +1, selectedObject.position.z + 1);
+                   newObject.name = `${selectedObject.name} copy`;
+                     scene.add(newObject);
+                      objects.push(newObject);
+                    updateObjectList();
+               }
+          }
+        }
         function addCube() {
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
@@ -653,7 +699,7 @@
             cube.name = `Cube ${objects.length + 1}`;
             scene.add(cube);
             objects.push(cube);
-            updateObjectList();
+                        updateObjectList();
         }
          function addSphere() {
             const geometry = new THREE.SphereGeometry(0.7, 32, 32);
@@ -678,7 +724,7 @@
          function addPlane() {
             const geometry = new THREE.PlaneGeometry( 5, 5 );
             const material = new THREE.MeshLambertMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide} );
-            const plane = new THREE.Mesh( geometry, material );
+            const plane = new THREE.Mesh(geometry, material );
             plane.scale.set(1,1,1);
             plane.name = `Plane ${objects.length + 1}`;
             scene.add(plane);
@@ -737,7 +783,7 @@
             if(!file) return;
             const reader = new FileReader();
             reader.onload = (event) => {
-                                const texture = new THREE.TextureLoader().load(event.target.result);
+                const texture = new THREE.TextureLoader().load(event.target.result);
                 if(textureType === 'albedo'){
                     albedoTexture = texture;
                     document.getElementById('albedo-preview').style.backgroundImage = `url(${event.target.result})`;
@@ -984,7 +1030,45 @@
         function closeCompilationPanel(){
             document.getElementById('compilation-panel').style.display = 'none';
          }
-           function loadScene(){
+            function saveScene() {
+        const sceneData = {
+           background: scene.background && scene.background.source && scene.background.source.data ? scene.background.source.data.src : renderer.getClearColor().getHexString(),
+            objects: objects.map(obj => {
+                return {
+                    type: obj.type,
+                    name: obj.name,
+                    geometry: obj.geometry.toJSON(),
+                    material: obj.material.toJSON(),
+                    position: obj.position.toArray(),
+                    rotation: obj.rotation.toArray(),
+                    scale: obj.scale.toArray(),
+                    visible: obj.visible,
+                    script: obj.script
+                };
+            }),
+           lights: scene.children.filter(child => child.isLight).map(light => {
+               return {
+                   type: light.type,
+                   name: light.name,
+                   color: light.color.getHex(),
+                    intensity: light.intensity,
+                    position: light.position.toArray(),
+                     target: light.target ? light.target.toArray(): null
+               }
+           })
+        };
+        const jsonData = JSON.stringify(sceneData);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'scene.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+        function loadScene(){
        const input = document.createElement('input');
        input.type = 'file';
        input.accept = '.json';
@@ -1115,6 +1199,18 @@
                 selectObject(null);
             }
         });
+       // Função para redimensionar o canvas
+        function onWindowResize() {
+            const newWidth = sceneContainer.offsetWidth;
+            const newHeight = sceneContainer.offsetHeight;
+
+            renderer.setSize(newWidth, newHeight);
+            camera.aspect = newWidth / newHeight;
+            camera.updateProjectionMatrix();
+        }
+
+        // Adiciona o ouvinte de evento resize
+        window.addEventListener('resize', onWindowResize, false);
         function animate(time) {
             const deltaTime = (time - lastTime) / 1000;
             lastTime = time;
