@@ -5,501 +5,617 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modelador 3D</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        /* Same styles as before, with focused adjustments for the object panel */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #181818;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        @media (min-width: 768px) {
-            body {
-                flex-direction: row;
-            }
-        }
-        .toolbar {
-            background-color: #202020;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #333;
-            flex-shrink: 0;
-        }
-        .toolbar-group {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        .left-toolbar {
-            display: flex;
-            gap: 10px;
-        }
-        .right-toolbar {
-            display: flex;
-            gap: 10px;
-        }
-        .icon-button {
-            background: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .icon-button:hover {
-            background-color: #333;
-        }
-        .settings-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        .settings-buttons button {
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .settings-buttons button:hover {
-            background-color: #333;
-        }
-        .status-bar {
-            background-color: #202020;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #333;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        #scene-container {
-            width: 100%;
-            height: 100%;
-            background-color: #252525;
-            flex: 1;
-        }
-        .sidebar {
-            width: 100%;
-            max-height: 200px;
-            background-color: #202020;
-            padding: 10px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            flex-direction: row;
-            overflow-x: auto;
-            flex-shrink: 0;
-        }
-        @media (min-width: 768px) {
-            .sidebar {
-                width: 180px;
-                max-height: none;
-                flex-direction: column;
-                border-right: 1px solid #333;
-                border-bottom: none;
-                overflow-x: hidden;
-
-            }
-        }
-        .sidebar h3 {
-            font-size: 14px;
-            margin: 0 0 10px 0;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-            white-space: nowrap;
-        }
-        .sidebar-group {
-            display: flex;
-            flex-direction: row;
-            gap: 5px;
-            white-space: nowrap;
-        }
-        @media (min-width: 768px) {
-            .sidebar-group {
-                flex-direction: column;
-                padding: 5px;
-            }
-        }
-        .sidebar-button {
-            background-color: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px 10px;
-            text-align: left;
-            text-decoration: none;
-            font-size: 14px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-        .sidebar-button:hover {
-            background-color: #333;
-        }
-        /* Object panel styles updated */
-        .object-panel-container {
-            background-color: #202020;
-            border-left: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            max-height: 100vh;
-            overflow-y: auto;
-            width: 250px; /* Fixed Width */
-            box-sizing: border-box;
-             align-items: center; /* Center items horizontally */
-        }
-           @media (max-width: 767px){
-            .object-panel-container {
-                 max-height: 500px;
-               width: 100%;
-            }
-         }
-        .object-panel-container h3 {
-           font-size: 14px;
-           margin: 10px 0;
-           border-bottom: 1px solid #333;
-           padding-bottom: 5px;
-           text-align: center; /* Center the title */
-           width: 100%; /* Ensure it takes full width of the container*/
-          margin-left: 0;
-       }
-      .object-list-container {
-           padding: 5px 10px;
-            display: flex;
-           flex-direction: column;
-           max-height: calc(100vh - 120px);
-          overflow-y: auto;
-          box-sizing: border-box;
-          align-items: center;
-          width: 100%;
-
-       }
-         .object-list-item{
-           padding: 8px;
-           cursor: pointer;
-           border-bottom: 1px solid #444;
-           display: flex;
-           justify-content: space-between; /* Keep buttons on the far right*/
-           align-items: center;
-           box-sizing: border-box;
-            width: 100%;
-           }
-       .object-list-item span{
-           margin-left: 5px;
-           white-space: nowrap;
-           overflow: hidden;
-           text-overflow: ellipsis;
-           flex-grow: 1;/* Push the name to the left */
-       }
-      .object-list-item button {
-            background: transparent;
-             border: none;
-            color: #fff;
-            cursor: pointer;
-          margin: 0 2px;
-            padding: 2px 5px;
-            font-size: 12px;
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.163.0/build/three.module.js",
+        "three/addons/controls/TransformControls": "https://unpkg.com/three@0.163.0/examples/jsm/controls/TransformControls.js",
+        "three/addons/controls/OrbitControls": "https://unpkg.com/three@0.163.0/examples/jsm/controls/OrbitControls.js",
+        "three/addons/loaders/OBJLoader": "https://unpkg.com/three@0.163.0/examples/jsm/loaders/OBJLoader.js"
       }
-         .object-list-item button:hover{
-               background: #333;
+    }
+  </script>
+ <style>
+    /* Global styles */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #181818;
+        color: #fff;
+        display: flex;
+        flex-direction: row;
+        min-height: 100vh;
+        font-size: 12px; /* Smaller global font size */
+    }
+    @media (max-width: 767px) {
+        body {
+            flex-direction: column; /* Mantém a direção column para telas pequenas */
+             font-size: 14px;/* Retorna o font size no mobile*/
         }
-
-       .object-list-item.selected {
-           background-color: #333;
-       }
-       .object-list-item:hover {
-           background-color: #333;
-       }
-        /* Parts Panel Styles */
-       .parts-panel-container {
-            background-color: #202020;
-            border-left: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            max-height: 100vh;
-            overflow-y: auto;
-            width: 200px; /* Fixed Width */
-            box-sizing: border-box;
-            align-items: center; /* Center items horizontally */
-         }
-         @media (max-width: 767px){
-            .parts-panel-container {
-                 max-height: 500px;
-                 width: 100%;
-            }
-         }
-        .parts-panel-container h3 {
-           font-size: 14px;
-           margin: 10px 0;
+    }
+    /* Toolbar */
+    .toolbar {
+        background-color: #202020;
+        padding: 5px 10px; /* Reduced padding */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #333;
+        flex-shrink: 0;
+    }
+    .toolbar-group {
+        display: flex;
+        gap: 3px; /* Reduced gap */
+        align-items: center;
+    }
+    .left-toolbar,
+    .right-toolbar {
+        display: flex;
+        gap: 5px; /* Reduced gap */
+    }
+    .icon-button {
+        background: transparent;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 4px 8px; /* Reduced padding */
+        text-align: center;
+        text-decoration: none;
+        font-size: 12px; /* Smaller icon button font size */
+        border-radius: 2px; /* Reduced border-radius */
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .icon-button:hover {
+        background-color: #333;
+    }
+    .settings-buttons {
+        display: flex;
+        gap: 2px; /* Reduced gap */
+    }
+    .settings-buttons button {
+        background-color: transparent;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 4px 8px; /* Reduced padding */
+        text-align: center;
+        text-decoration: none;
+        font-size: 12px; /* Smaller settings button font size */
+        border-radius: 2px; /* Reduced border-radius */
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .settings-buttons button:hover {
+        background-color: #333;
+    }
+    /* Status Bar */
+    .status-bar {
+        background-color: #202020;
+        padding: 5px 10px; /* Reduced padding */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid #333;
+        font-size: 12px; /* Smaller status bar font size */
+        flex-shrink: 0;
+    }
+    /* Scene Container */
+    #scene-container {
+        width: 100%;
+        height: 100%;
+        background-color: #252525;
+        flex: 1;
+    }
+    /* Sidebar */
+    .sidebar {
+       width: 180px;
+        max-height: none;
+        flex-direction: column;
+        border-right: 1px solid #333;
+        border-bottom: none;
+        overflow-x: hidden;
+        padding: 5px;
+        display: flex; /* Enable flexbox for the sidebar */
+         align-items: flex-start; /* Align items to the left */
+    }
+      @media (max-width: 767px) {
+       .sidebar {
+          width: 100%;
+            max-height: 200px;
+           flex-direction: row;
+            border-right: none;
            border-bottom: 1px solid #333;
-           padding-bottom: 5px;
-           text-align: center; /* Center the title */
-           width: 100%; /* Ensure it takes full width of the container*/
-            margin-left: 0;
+           overflow-x: auto;
+           padding: 5px 0;
+             align-items: center; /* Align items to the center in row*/
+             justify-content: flex-start;
        }
-         .parts-list-container {
-            padding: 5px 10px;
-             display: flex;
-            flex-direction: column;
-            max-height: calc(100vh - 120px);
-            overflow-y: auto;
-            box-sizing: border-box;
-            align-items: center;
-            width: 100%;
-
-         }
-        .parts-list-item{
-           padding: 8px;
-           cursor: pointer;
-           border-bottom: 1px solid #444;
-           display: flex;
-           justify-content: space-between; /* Keep buttons on the far right*/
-           align-items: center;
-           box-sizing: border-box;
-           width: 100%;
-        }
-        .parts-list-item span{
-            margin-left: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-             flex-grow: 1;/* Push the name to the left */
-        }
-       .parts-list-item button {
-             background: transparent;
-              border: none;
-             color: #fff;
-             cursor: pointer;
-            margin: 0 2px;
-             padding: 2px 5px;
-             font-size: 12px;
-       }
-          .parts-list-item button:hover{
-                 background: #333;
-          }
-       .parts-list-item.selected {
-           background-color: #333;
-       }
-        .parts-list-item:hover {
-            background-color: #333;
-        }
-       .main-content {
-           display: flex;
-           flex-direction: column;
-           flex: 1;
-           position: relative;
-       }
-      .material-buttons-container {
-           display: flex;
-           flex-direction: column;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 5px 10px;
-       }
-         .material-buttons-container h3{
-             font-size: 14px;
-            margin: 10px 0;
-           border-bottom: 1px solid #333;
-          padding-bottom: 5px;
-          text-align: center; /* Center the title */
+    }
+     .sidebar > div {
          width: 100%;
-          margin-left: 0;
-       }
-      .material-buttons {
-           display: flex;
-          flex-wrap: wrap;
-           gap: 5px;
-           box-sizing: border-box;
-           padding: 0 5px;
-
-       }
-       .material-buttons button{
-           background-color: transparent;
-           border: 1px solid #444;
-           color: #fff;
-           padding: 6px 10px;
-           text-align: center;
-           text-decoration: none;
-           font-size: 14px;
-           border-radius: 3px;
-           cursor: pointer;
-           transition: background-color 0.2s;
-           white-space: nowrap;
-           box-sizing: border-box;
-       }
-       .material-buttons button:hover{
-           background-color: #333;
-       }
-       .texture-buttons{
-           display: flex;
-           gap: 5px;
-           margin-top: 10px;
-            padding-left: 5px; /* Add padding to the group */
-       }
-       .texture-buttons button {
-           background-color: transparent;
-           border: 1px solid #444;
-           color: #fff;
-           padding: 6px 10px;
-           text-align: center;
-           text-decoration: none;
-           font-size: 14px;
-           border-radius: 3px;
-           cursor: pointer;
-           transition: background-color 0.2s;
-           white-space: nowrap;
-           box-sizing: border-box;
-       }
-       .texture-buttons button:hover {
-           background-color: #333;
-       }
-       #code-editor {
-           width: 80%;
-           height: 80%;
-           background-color: #333;
-           color: #fff;
-           border: 1px solid #444;
-           padding: 10px;
-           box-sizing: border-box;
-           font-size: 14px;
-       }
-       @media (max-width: 767px) {
-           #code-editor {
-               width: 95%;
-               height: 60%;
-           }
-       }
-       #code-editor:focus{
-           outline: none;
-       }
-       #code-editor-container {
-           display: none;
-           position: absolute;
-           top: 50%;
-           left: 50%;
-           transform: translate(-50%, -50%);
-           background-color: #202020;
-           border: 1px solid #444;
-           padding: 10px;
-           z-index: 1000;
-       }
-       #code-editor-buttons{
-           display: flex;
-           gap: 10px;
-           margin-top: 10px;
-       }
-       #code-editor-buttons button {
-           background-color: transparent;
-           border: 1px solid #444;
-           color: #fff;
-           padding: 6px 10px;
-           text-align: center;
-           text-decoration: none;
-           font-size: 14px;
-           border-radius: 3px;
-           cursor: pointer;
-           transition: background-color 0.2s;
-       }
-       #code-editor-buttons button:hover {
-           background-color: #333;
-       }
-       #scene-settings-container {
-           display: none;
-           position: absolute;
-           top: 50%;
-           left: 50%;
-           transform: translate(-50%, -50%);
-           background-color: #202020;
-           border: 1px solid #444;
-           padding: 10px;
-           z-index: 1000;
-       }
-       #scene-settings-container label {
-           display: block;
-           font-size: 14px;
-           margin-bottom: 5px;
-       }
-       #scene-settings-container input[type="color"]{
-           background-color: #333;
-           border: 1px solid #444;
-           color: #fff;
+     }
+    .sidebar h3 {
+        font-size: 12px; /* Smaller sidebar heading font size */
+        margin: 0 0 5px 0;
+        border-bottom: 1px solid #333;
+        padding-bottom: 3px; /* Reduced padding */
+        white-space: nowrap;
+        text-align: left;
+        padding-left: 5px;
+    }
+    .sidebar-group {
+        display: flex;
+        flex-direction: column; /* Change to column for vertical alignment */
+         gap: 3px; /* Reduced gap */
+        white-space: nowrap;
+        width: 100%; /* Ensure it takes full width */
+           align-items: center; /* Center the items horizontally*/
+    }
+     @media (max-width: 767px) {
+       .sidebar-group {
+           flex-direction: column;
            padding: 5px;
+             align-items: flex-start; /* Back to left for row layout */
        }
-       #scene-settings-container button {
-           margin-top: 10px;
+    }
+    .sidebar-button {
+        background-color: transparent;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 4px 8px; /* Reduced padding */
+        text-align: center; /* Changed to center */
+        text-decoration: none;
+        font-size: 12px; /* Smaller sidebar button font size */
+        border-radius: 2px; /* Reduced border-radius */
+        cursor: pointer;
+        transition: background-color 0.2s;
+        white-space: nowrap;
+        width: 90%;
+          box-sizing: border-box;
+    }
+    .sidebar-button:hover {
+        background-color: #333;
+    }
+    /* Object Panel */
+    .object-panel-container {
+        background-color: #202020;
+        border-left: 1px solid #333;
+        display: flex;
+        flex-direction: column;
+        max-height: 100vh;
+        overflow-y: auto;
+         width: 200px; /* Reduced width */
+        box-sizing: border-box;
+         align-items: center;
+         position: static;
+        padding: 5px;
+    }
+   @media (max-width: 767px){
+      .object-panel-container{
+          width: 100%;
+           position: relative;
+           padding: 0;
        }
-       .transform-controls-buttons{
-           display: flex;
-           gap: 5px;
-           position: absolute;
-           top: 10px;
-           left: 10px;
+    }
+    .object-panel-container h3 {
+       font-size: 12px; /* Smaller object panel heading font size */
+       margin: 5px 0;
+       border-bottom: 1px solid #333;
+       padding-bottom: 3px;
+       text-align: center;
+       width: 100%;
+      margin-left: 0;
+   }
+  .object-list-container {
+       padding: 2px;
+        display: flex;
+       flex-direction: column;
+       max-height: calc(100vh - 100px);
+      overflow-y: auto;
+      box-sizing: border-box;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 5px;
+
+   }
+     .object-list-item{
+       padding: 4px; /* Reduced padding */
+       cursor: pointer;
+       border-bottom: 1px solid #444;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       box-sizing: border-box;
+        width: 100%;
        }
-       .transform-controls-buttons button{
-           background-color: transparent;
-           border: 1px solid #444;
-           color: #fff;
-           padding: 6px 10px;
-           text-align: center;
-           text-decoration: none;
-           font-size: 14px;
-           border-radius: 3px;
-           cursor: pointer;
-           transition: background-color 0.2s;
-           white-space: nowrap;
-           box-sizing: border-box;
+   .object-list-item span{
+       margin-left: 3px;
+       white-space: nowrap;
+       overflow: hidden;
+       text-overflow: ellipsis;
+       flex-grow: 1;
+    font-size: 12px;
+   }
+  .object-list-item button {
+        background: transparent;
+         border: none;
+        color: #fff;
+        cursor: pointer;
+      margin: 0 1px;
+        padding: 1px 3px;
+        font-size: 10px; /* Smaller button font size*/
+  }
+     .object-list-item button:hover{
+           background: #333;
+    }
+
+   .object-list-item.selected {
+       background-color: #333;
+   }
+   .object-list-item:hover {
+       background-color: #333;
+   }
+    /* Parts Panel */
+   .parts-panel-container {
+        background-color: #202020;
+       position: absolute;
+        top: 0;
+       left: 0;
+        z-index: 1001;
+         max-height: 100vh;
+        width: 180px; /* Reduced width*/
+       border-left: none;
+        border-right: 1px solid #333;
+         display: flex;
+         flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+       padding: 5px;
+     }
+      @media (max-width: 767px){
+        .parts-panel-container{
+           position: static;
+            border-left: 1px solid #333;
+           max-height: 500px;
+            width: 100%;
+           border-right: none;
+           padding: 0;
        }
-       .transform-controls-buttons button:hover{
-           background-color: #333;
+      }
+   .parts-panel-header {
+      display: flex;
+       justify-content: space-between;
+      align-items: center;
+       padding: 5px 10px 2px; /* Reduced padding */
+      border-bottom: 1px solid #333;
+  }
+    .parts-panel-header h3 {
+       font-size: 12px; /* Smaller parts panel header font size */
+      margin: 0;
+       padding-bottom: 0;
+      border-bottom: none;
+  }
+   .parts-panel-header button {
+       background: transparent;
+       border: 1px solid #444;
+       color: #fff;
+      padding: 4px 8px; /* Reduced padding */
+       font-size: 12px; /* Smaller parts panel button font size */
+       border-radius: 2px;
+       cursor: pointer;
+      transition: background-color 0.2s;
+
+   }
+   .parts-panel-header button:hover{
+        background-color: #333;
+  }
+     .parts-list-container {
+         padding: 2px;
+         display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        box-sizing: border-box;
+         align-items: center;
+        width: 100%;
+         margin-bottom: 5px;
+
+     }
+       @media (max-width: 767px){
+     .parts-list-container{
+            max-height: calc(100vh - 120px);
+        }
+    }
+    .parts-list-item{
+       padding: 4px;
+       cursor: pointer;
+       border-bottom: 1px solid #444;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       box-sizing: border-box;
+       width: 100%;
+    }
+    .parts-list-item span{
+        margin-left: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+         flex-grow: 1;
+        font-size: 12px;
+    }
+   .parts-list-item button {
+         background: transparent;
+          border: none;
+         color: #fff;
+         cursor: pointer;
+        margin: 0 1px;
+         padding: 1px 3px;
+         font-size: 10px;
+   }
+      .parts-list-item button:hover{
+             background: #333;
+      }
+   .parts-list-item.selected {
+       background-color: #333;
+   }
+    .parts-list-item:hover {
+        background-color: #333;
+    }
+   .main-content {
+       display: flex;
+       flex-direction: column;
+       flex: 1;
+       position: relative;
+   }
+   @media (max-width: 767px){
+       .main-content{
+            flex-direction: column;
+        }
+   }
+  .material-buttons-container {
+       display: flex;
+       flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 5px;
+   }
+     .material-buttons-container h3{
+         font-size: 12px; /* Smaller material heading font size */
+        margin: 5px 0;
+       border-bottom: 1px solid #333;
+      padding-bottom: 3px;
+      text-align: center;
+     width: 100%;
+      margin-left: 0;
+   }
+  .material-buttons {
+       display: flex;
+      flex-wrap: wrap;
+       gap: 3px; /* Reduced gap */
+       box-sizing: border-box;
+       padding: 0 3px;
+
+   }
+   .material-buttons button{
+       background-color: transparent;
+       border: 1px solid #444;
+       color: #fff;
+       padding: 4px 8px; /* Reduced padding */
+       text-align: center;
+       text-decoration: none;
+       font-size: 12px; /* Smaller material button font size */
+       border-radius: 2px;
+       cursor: pointer;
+       transition: background-color 0.2s;
+       white-space: nowrap;
+       box-sizing: border-box;
+   }
+   .material-buttons button:hover{
+       background-color: #333;
+   }
+   .texture-buttons{
+       display: flex;
+       gap: 3px; /* Reduced gap */
+       margin-top: 5px; /* Reduced margin*/
+        padding-left: 3px;
+   }
+   .texture-buttons button {
+       background-color: transparent;
+       border: 1px solid #444;
+       color: #fff;
+       padding: 4px 8px; /* Reduced padding */
+       text-align: center;
+       text-decoration: none;
+       font-size: 12px; /* Smaller texture button font size */
+       border-radius: 2px;
+       cursor: pointer;
+       transition: background-color 0.2s;
+       white-space: nowrap;
+       box-sizing: border-box;
+   }
+   .texture-buttons button:hover {
+       background-color: #333;
+   }
+   #code-editor {
+       width: 80%;
+       height: 80%;
+       background-color: #333;
+       color: #fff;
+       border: 1px solid #444;
+       padding: 5px; /* Reduced padding */
+       box-sizing: border-box;
+       font-size: 12px; /* Smaller editor font size */
+   }
+   @media (max-width: 767px) {
+       #code-editor {
+           width: 95%;
+           height: 60%;
        }
-    </style>
+   }
+   #code-editor:focus{
+       outline: none;
+   }
+   #code-editor-container {
+       display: none;
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       background-color: #202020;
+       border: 1px solid #444;
+       padding: 10px;
+       z-index: 1000;
+   }
+   #code-editor-buttons{
+       display: flex;
+       gap: 5px;
+       margin-top: 5px; /* Reduced margin */
+   }
+   #code-editor-buttons button {
+       background-color: transparent;
+       border: 1px solid #444;
+       color: #fff;
+       padding: 4px 8px; /* Reduced padding */
+       text-align: center;
+       text-decoration: none;
+       font-size: 12px; /* Smaller editor button font size */
+       border-radius: 2px;
+       cursor: pointer;
+       transition: background-color 0.2s;
+   }
+   #code-editor-buttons button:hover {
+       background-color: #333;
+   }
+   #scene-settings-container {
+       display: none;
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       background-color: #202020;
+       border: 1px solid #444;
+       padding: 10px;
+       z-index: 1000;
+   }
+   #scene-settings-container label {
+       display: block;
+       font-size: 12px; /* Smaller settings label font size */
+       margin-bottom: 2px;
+   }
+   #scene-settings-container input[type="color"]{
+       background-color: #333;
+       border: 1px solid #444;
+       color: #fff;
+       padding: 3px;
+   }
+   #scene-settings-container button {
+       margin-top: 5px;
+   }
+    .transform-controls-buttons{
+        display: flex;
+        gap: 3px; /* Reduced gap */
+        position: absolute;
+        top: 5px;
+        left: 5px;
+    }
+   .transform-controls-buttons button{
+       background-color: transparent;
+       border: 1px solid #444;
+       color: #fff;
+       padding: 4px 8px; /* Reduced padding */
+       text-align: center;
+       text-decoration: none;
+       font-size: 12px; /* Smaller transform button font size */
+       border-radius: 2px;
+       cursor: pointer;
+       transition: background-color 0.2s;
+       white-space: nowrap;
+       box-sizing: border-box;
+    }
+    .transform-controls-buttons button:hover{
+        background-color: #333;
+    }
+    #compilation-panel {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #202020;
+        border: 1px solid #444;
+        padding: 10px;
+        z-index: 1001;
+        flex-direction: column;
+        gap: 5px;
+    }
+    #compilation-panel h3 {
+         font-size: 14px;
+        margin-bottom: 5px;
+    }
+    #compiled-code {
+         width: 400px;
+        height: 200px;
+         background-color: #333;
+         color: #fff;
+         border: 1px solid #444;
+         padding: 5px;
+         box-sizing: border-box;
+        font-size: 12px;
+    }
+    #compilation-panel div {
+        display: flex;
+        gap: 5px;
+        justify-content: flex-end;
+    }
+    #compilation-panel button {
+        background-color: transparent;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 4px 8px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 12px;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    #compilation-panel button:hover{
+       background-color: #333;
+    }
+</style>
 </head>
 <body>
     <aside class="sidebar">
         <div>
             <h3>Create</h3>
             <div class="sidebar-group">
-                <button class="sidebar-button" onclick="addCube()"><i class="fas fa-cube"></i> Cube</button>
-                <button class="sidebar-button" onclick="addSphere()"><i class="fas fa-sphere"></i> Sphere</button>
-                <button class="sidebar-button" onclick="addTorus()"><i class="fas fa-ring"></i> Torus</button>
-                <button class="sidebar-button" onclick="addPlane()"><i class="fas fa-square"></i> Plane</button>
+                <button class="sidebar-button" id="add-cube-btn"><i class="fas fa-cube"></i> Cube</button>
+                <button class="sidebar-button" id="add-sphere-btn"><i class="fas fa-sphere"></i> Sphere</button>
+                <button class="sidebar-button" id="add-torus-btn"><i class="fas fa-ring"></i> Torus</button>
+                <button class="sidebar-button" id="add-plane-btn"><i class="fas fa-square"></i> Plane</button>
             </div>
         </div>
         <div>
              <h3>Lights</h3>
              <div class="sidebar-group">
-                <button class="sidebar-button" onclick="addAmbientLight()"><i class="fas fa-sun"></i> Ambient</button>
-                <button class="sidebar-button" onclick="addDirectionalLight()"><i class="fas fa-sun"></i> Directional</button>
-                 <button class="sidebar-button" onclick="addPointLight()"><i class="fas fa-lightbulb"></i> Point</button>
-                   <button class="sidebar-button" onclick="addSpotLight()"><i class="fas fa-lightbulb"></i> Spot</button>
+                <button class="sidebar-button" id="add-ambient-light-btn"><i class="fas fa-sun"></i> Ambient</button>
+                <button class="sidebar-button" id="add-directional-light-btn"><i class="fas fa-sun"></i> Directional</button>
+                 <button class="sidebar-button" id="add-point-light-btn"><i class="fas fa-lightbulb"></i> Point</button>
+                   <button class="sidebar-button" id="add-spot-light-btn"><i class="fas fa-lightbulb"></i> Spot</button>
             </div>
         </div>
         <div>
             <h3>Render</h3>
             <div class="sidebar-group">
-                <button class="sidebar-button" onclick="toggleGridHelper()"><i class="fas fa-th"></i> Grid</button>
-                <button class="sidebar-button" onclick="openSceneSettings()"><i class="fas fa-cog"></i> Scene</button>
+                <button class="sidebar-button" id="toggle-grid-btn"><i class="fas fa-th"></i> Grid</button>
+                <button class="sidebar-button" id="open-scene-settings-btn"><i class="fas fa-cog"></i> Scene</button>
             </div>
         </div>
         <div>
             <h3>Model</h3>
             <div class="sidebar-group">
-                <button class="sidebar-button" onclick="importOBJModel()"><i class="fas fa-file-import"></i> OBJ</button>
+                <button class="sidebar-button" id="import-obj-btn"><i class="fas fa-file-import"></i> OBJ</button>
             </div>
         </div>
     </aside>
@@ -507,11 +623,11 @@
         <header class="toolbar">
             <div class="left-toolbar">
                 <div class="toolbar-group">
-                    <button class="icon-button" onclick="resetCamera()"><i class="fas fa-vector-square" style="transform: rotate(45deg)"></i></button>
-                    <button class="icon-button" onclick="fitCamera()"><i class="fas fa-vector-square"  style="transform: rotate(90deg)"></i></button>
+                    <button class="icon-button" id="reset-camera-btn"><i class="fas fa-vector-square" style="transform: rotate(45deg)"></i></button>
+                    <button class="icon-button" id="fit-camera-btn"><i class="fas fa-vector-square"  style="transform: rotate(90deg)"></i></button>
                 </div>
                 <div class="toolbar-group">
-                    <button class="icon-button" onclick="compileToJavaScript()"><i class="fas fa-clone"></i></button>
+                    <button class="icon-button" id="compile-js-btn"><i class="fas fa-clone"></i></button>
                     <button class="icon-button"><i class="fas fa-plus"></i></button>
                 </div>
             </div>
@@ -532,20 +648,20 @@
         <div style="position: relative; flex: 1;">
             <div id="scene-container"></div>
             <div id="skybox-texture-importer" style="position: absolute; top: 10px; right: 10px; display: none">
-                <input type="file" id="skybox-texture-input" accept="image/*" onchange="loadSkyboxTexture()" style="color: #000; background-color: #fff"/>
+                <input type="file" id="skybox-texture-input" accept="image/*"  style="color: #000; background-color: #fff"/>
             </div>
             <div class="transform-controls-buttons">
-                <button onclick="setTransformMode('translate')"><i class="fas fa-arrows-alt"></i></button>
-                <button onclick="setTransformMode('rotate')"><i class="fas fa-sync-alt"></i></button>
-                <button onclick="setTransformMode('scale')"><i class="fas fa-expand-arrows-alt"></i></button>
+                <button id="translate-mode-btn"><i class="fas fa-arrows-alt"></i></button>
+                <button id="rotate-mode-btn"><i class="fas fa-sync-alt"></i></button>
+                <button id="scale-mode-btn"><i class="fas fa-expand-arrows-alt"></i></button>
             </div>
         </div>
         <footer class="status-bar">
             <div style="display: flex; gap: 10px;">
-                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;" onclick="copyObject()"><i class="fas fa-clone"></i></button>
-                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;" onclick="saveScene()"><i class="fas fa-file"></i></button>
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;" id="copy-object-btn"><i class="fas fa-clone"></i></button>
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;" id="save-scene-btn"><i class="fas fa-file"></i></button>
                 <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;"><i class="fas fa-eye"></i></button>
-                 <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px; color: red;" onclick="removeObject(selectedObject)"><i class="fas fa-trash"></i></button>
+                 <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px; color: red;" id="remove-object-btn"><i class="fas fa-trash"></i></button>
             </div>
             <span>Rendered <span id="fps-counter">30</span> fps</span>
         </footer>
@@ -560,23 +676,26 @@
          <div class="material-buttons-container">
             <h3>Materials</h3>
             <div class="material-buttons">
-                <button onclick="changeMaterial('basic')">Basic</button>
-                <button onclick="changeMaterial('lambert')">Lambert</button>
-                <button onclick="changeMaterial('phong')">Phong</button>
+                <button id="material-basic-btn">Basic</button>
+                <button id="material-lambert-btn">Lambert</button>
+                <button id="material-phong-btn">Phong</button>
             </div>
          </div>
        <div class="texture-buttons">
-            <button onclick="openAlbedoTextureImporter()">Albedo</button>
+            <button id="open-albedo-texture-importer-btn">Albedo</button>
         </div>
        <div id="albedo-preview" style="width: 50px; height: 50px; margin: 10px; background-color: #555; border: 1px solid #444;"></div>
-        <input type="file" id="albedo-texture" accept="image/*" style="display:none" onchange="loadTexture('albedo')" />
+        <input type="file" id="albedo-texture" accept="image/*" style="display:none" />
        <div style="display: flex; flex-direction: column; align-items: center;">
             <label for="object-color-picker" style="font-size: 14px; margin-bottom: 5px; margin-top: 5px;">Color</label>
-            <input type="color" id="object-color-picker" value="#ffffff" style="background-color: #333; border: 1px solid #444; color: #fff; padding: 5px;" oninput="changeObjectColor()">
+            <input type="color" id="object-color-picker" value="#ffffff" style="background-color: #333; border: 1px solid #444; color: #fff; padding: 5px;">
         </div>
     </aside>
      <aside class="parts-panel-container" id="parts-panel" style="display: none;">
-         <h3>Parts</h3>
+         <div class="parts-panel-header">
+            <h3>Parts</h3>
+             <button id="close-parts-panel-btn"><i class="fas fa-times"></i></button>
+        </div>
        <div class="parts-list-container">
             <ul id="parts-list"></ul>
         </div>
@@ -584,864 +703,915 @@
     <div id="code-editor-container">
         <textarea id="code-editor"></textarea>
         <div id="code-editor-buttons">
-            <button onclick="saveCode()">Save</button>
-            <button onclick="closeCodeEditor()">Close</button>
+            <button id="save-code-btn">Save</button>
+            <button id="close-code-editor-btn">Close</button>
         </div>
     </div>
     <div id="scene-settings-container">
         <label for="scene-background-color">Background Color</label>
-        <input type="color" id="scene-background-color" value="#252525">
-         <button onclick="closeSceneSettings()">Close</button>
+                <input type="color" id="scene-background-color" value="#252525">
+         <button id="close-scene-settings-btn">Close</button>
     </div>
      <div id="compilation-panel" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #202020; border: 1px solid #444; padding: 20px; z-index: 1001; flex-direction: column; gap: 10px;">
         <h3>Compilation Successful!</h3>
         <textarea id="compiled-code" style="width: 500px; height: 300px; background-color: #333; color: #fff; border: 1px solid #444; padding: 10px; box-sizing: border-box; font-size: 14px;"></textarea>
         <div style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button onclick="copyCompiledCode()" style="background-color: transparent; border: 1px solid #444; color: #fff; padding: 6px 10px; text-align: center; text-decoration: none; font-size: 14px; border-radius: 3px; cursor: pointer; transition: background-color 0.2s;">Copy</button>
-            <button onclick="downloadCompiledCode()" style="background-color: transparent; border: 1px solid #444; color: #fff; padding: 6px 10px; text-align: center; text-decoration: none; font-size: 14px; border-radius: 3px; cursor: pointer; transition: background-color 0.2s;">Download</button>
-             <button onclick="closeCompilationPanel()" style="background-color: transparent; border: 1px solid #444; color: #fff; padding: 6px 10px; text-align: center; text-decoration: none; font-size: 14px; border-radius: 3px; cursor: pointer; transition: background-color 0.2s;">Close</button>
+            <button id="copy-compiled-code-btn" style="background-color: transparent; border: 1px solid #444; color: #fff; padding: 6px 10px; text-align: center; text-decoration: none; font-size: 14px; border-radius: 3px; cursor: pointer; transition: background-color 0.2s;">Copy</button>
+            <button id="download-compiled-code-btn" style="background-color: transparent; border: 1px solid #444; color: #fff; padding: 6px 10px; text-align: center; text-decoration: none; font-size: 14px; border-radius: 3px; cursor: pointer; transition: background-color 0.2s;">Download</button>
+             <button id="close-compilation-panel-btn" style="background-color: transparent; border: 1px solid #444; color: #fff; padding: 6px 10px; text-align: center; text-decoration: none; font-size: 14px; border-radius: 3px; cursor: pointer; transition: background-color 0.2s;">Close</button>
         </div>
     </div>
-    <script src="js/three.min.js"></script>
-    <script src="js/orbitcontrols.js"></script>
-    <script src="js/OBJLoader.js"></script>
-    <script src="js/TransformControls.js"></script>
-    <script>
+ <script type="module">
+import * as THREE from 'three';
+import { TransformControls } from 'three/addons/controls/TransformControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader';
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+const sceneContainer = document.getElementById('scene-container');
+renderer.setSize(sceneContainer.offsetWidth, sceneContainer.offsetHeight);
+sceneContainer.appendChild(renderer.domElement);
+
+
+const controls = new OrbitControls(camera, renderer.domElement);
+camera.position.z = 5;
+
+
+const transformControls = new TransformControls(camera, renderer.domElement);
+scene.add(transformControls);
+transformControls.addEventListener( 'dragging-changed', function ( event ) {
+    controls.enabled = ! event.value;
+} );
+
+
+
+const objLoader = new OBJLoader();
+
+let gridHelper = new THREE.GridHelper(10, 10);
+scene.add(gridHelper);
+let isGridVisible = true;
+
+let objects = [];
+let selectedObject = null;
+let selectedPart = null;
+const objectList = document.getElementById('object-list');
+const partsPanel = document.getElementById('parts-panel');
+const partsList = document.getElementById('parts-list');
+const skyboxTextureImporter = document.getElementById('skybox-texture-importer');
+const codeEditorContainer = document.getElementById('code-editor-container');
+const codeEditor = document.getElementById('code-editor');
+const sceneSettingsContainer = document.getElementById('scene-settings-container');
+const sceneBackgroundColorInput = document.getElementById('scene-background-color');
+
+let albedoTexture = null;
+
+function toggleGridHelper() {
+    isGridVisible = !isGridVisible;
+    gridHelper.visible = isGridVisible;
+}
+function openSkyboxTextureImporter(){
+    skyboxTextureImporter.style.display = skyboxTextureImporter.style.display === 'none' ? 'block' : 'none';
+}
+function loadSkyboxTexture(){
+    const input = document.getElementById('skybox-texture-input');
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const texture = new THREE.TextureLoader().load(event.target.result);
+        scene.background = texture;
+    };
+    reader.readAsDataURL(file);
+    skyboxTextureImporter.style.display = 'none';
+}
+function fitCamera(){
+    if(!objects || objects.length === 0) return;
+    const box = new THREE.Box3().setFromObject(scene);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs(maxDim / 0.7 * Math.tan( fov / 2));
+    camera.position.z = cameraZ + center.z;
+    controls.target.copy(center);
+    controls.update();
+}
+function resetCamera(){
+    camera.position.set(0, 0, 5);
+    controls.target.set(0,0,0);
+    controls.update();
+}
+
+function updateObjectList(){
+    objectList.innerHTML = '';
+     const allObjects = [...objects, ...scene.children.filter(child => child.isLight || child.type === 'Camera')];
+    allObjects.forEach((obj, index) => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('object-list-item');
+        const icon = obj.isLight ? '<i class="fas fa-lightbulb"></i>' : obj.type === 'Camera' ? '<i class="fas fa-video"></i>': '<i class="fas fa-cube"></i>';
+        listItem.innerHTML = `${icon} <span>${obj.name || `Object ${index + 1}`}</span>`;
+        listItem.addEventListener('click', () => {
+            selectObject(obj);
+        });
+        if(obj === selectedObject){
+            listItem.classList.add('selected');
+        }
+        const visibilityButton = document.createElement('button');
+        visibilityButton.innerHTML = obj.visible ? `<i class="fas fa-eye"></i>` : `<i class="fas fa-eye-slash"></i>`;
+        visibilityButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            obj.visible = !obj.visible;
+            visibilityButton.innerHTML = obj.visible ? `<i class="fas fa-eye"></i>` : `<i class="fas fa-eye-slash"></i>`;
+        });
+        const deleteButton = document.createElement('button');
+        deleteButton.innerHTML = '<i class="fas fa-trash" style="color: red;"></i>';
+        deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeObject(obj);
+        });
+        listItem.appendChild(visibilityButton);
+        listItem.appendChild(deleteButton);
+        objectList.appendChild(listItem);
+    });
+}
+function removeObject(obj) {
+    const index = objects.indexOf(obj);
+    if (index > -1) {
+        scene.remove(obj);
+        objects.splice(index, 1);
+        if(selectedObject === obj){
+           if(transformControls.object){
+                transformControls.detach(transformControls.object)
+            }
+            selectedObject = null;
+             partsPanel.style.display = 'none';
+        }
+        updateObjectList();
+    }
+    if(obj.isLight || obj.type === 'Camera'){
+        scene.remove(obj)
+        if(selectedObject === obj){
+            if(transformControls.object){
+                transformControls.detach(transformControls.object)
+            }
+            selectedObject = null;
+        }
+         partsPanel.style.display = 'none';
+        updateObjectList()
+    }
+}
+function selectObject(obj){
+    selectedObject = obj;
+    updateObjectList();
+    codeEditor.value = obj.script || '';
+     if(transformControls.object){
+         transformControls.detach(transformControls.object)
+     }
+    if(selectedObject)
+         transformControls.attach(selectedObject);
+    if(selectedObject.material){
+        document.getElementById('object-color-picker').value = `#${selectedObject.material.color.getHexString()}`
+    }
+    if(selectedObject.isLight){
+         document.getElementById('object-color-picker').value = `#${selectedObject.color.getHexString()}`;
+    }
+   updatePartsList();
+}
+function updatePartsList(){
+   partsList.innerHTML = '';
+   if(selectedObject){
+      if(selectedObject.children && selectedObject.children.length > 0){
+            partsPanel.style.display = 'flex';
+            selectedObject.children.forEach((part, index) => {
+                if (part.isMesh){
+                   const listItem = document.createElement('li');
+                  listItem.classList.add('parts-list-item');
+                    listItem.innerHTML = `<span>${part.name || `Part ${index + 1}`}</span>`;
+                    listItem.addEventListener('click', () => {
+                     selectPart(part)
+                   });
+                   if(part === selectedPart){
+                       listItem.classList.add('selected')
+                     }
+                     partsList.appendChild(listItem);
+                 }
+            });
+        }
+     else if(selectedObject.type === 'Mesh' && selectedObject.geometry && selectedObject.geometry.attributes && selectedObject.geometry.attributes.position){
+            partsPanel.style.display = 'flex';
+           const vertexCount = selectedObject.geometry.attributes.position.count;
+            if(vertexCount < 2000) {
+                  for(let i = 0; i < vertexCount; i++) {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('parts-list-item');
+                    listItem.innerHTML = `<span>Vertex ${i + 1}</span>`;
+                    listItem.addEventListener('click', () => {
+                    selectPart(i)
+                    });
+                      if(i === selectedPart){
+                          listItem.classList.add('selected');
+                     }
+                    partsList.appendChild(listItem)
+                }
+         }
+       else {
+                const listItem = document.createElement('li');
+                   listItem.classList.add('parts-list-item');
+                     listItem.innerHTML = `<span>${selectedObject.name}</span>`;
+                     listItem.addEventListener('click', () => {
+                       selectPart(selectedObject)
+                    });
+                       if(selectedObject === selectedPart){
+                          listItem.classList.add('selected');
+                     }
+                   partsList.appendChild(listItem)
+         }
+    } else{
+          partsPanel.style.display = 'none';
+    }
+    } else{
+          partsPanel.style.display = 'none';
+    }
+ }
+function selectPart(part){
+   selectedPart = part;
+   updatePartsList();
+}
+ function copyObject(){
+     if(selectedObject){
+          let newObject;
+        if (selectedObject.type === 'Mesh') {
+               let geometry;
+                if(selectedObject.geometry.type === 'BoxGeometry') {
+                     geometry = new THREE.BoxGeometry().fromJSON(selectedObject.geometry.toJSON());
+                }
+                else if(selectedObject.geometry.type === 'SphereGeometry') {
+                    geometry = new THREE.SphereGeometry().fromJSON(selectedObject.geometry.toJSON());
+                }
+                 else if(selectedObject.geometry.type === 'TorusGeometry') {
+                     geometry = new THREE.TorusGeometry().fromJSON(selectedObject.geometry.toJSON());
+                }
+                 else if(selectedObject.geometry.type === 'PlaneGeometry') {
+                     geometry = new THREE.PlaneGeometry().fromJSON(selectedObject.geometry.toJSON());
+                }
+           const material = selectedObject.material.clone();
+           newObject = new THREE.Mesh(geometry, material);
+        }
+        else if(selectedObject.isLight) {
+              if(selectedObject.type === 'DirectionalLight')
+               newObject = new THREE.DirectionalLight().copy(selectedObject);
+             else if(selectedObject.type === 'PointLight')
+                 newObject = new THREE.PointLight().copy(selectedObject);
+            else if(selectedObject.type === 'AmbientLight')
+                 newObject = new THREE.AmbientLight().copy(selectedObject)
+              else if(selectedObject.type === 'SpotLight')
+                 newObject = new THREE.SpotLight().copy(selectedObject);
+        }
+       if(newObject){
+            newObject.position.set(selectedObject.position.x + 1, selectedObject.position.y +1, selectedObject.position.z + 1);
+           newObject.name = `${selectedObject.name} copy`;
+             scene.add(newObject);
+              objects.push(newObject);
+            updateObjectList();
+       }
+  }
+}
+function addCube() {
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+    const cube = new THREE.Mesh(geometry, material);
+     cube.scale.set(1,1,1);
+    cube.name = `Cube ${objects.length + 1}`;
+    scene.add(cube);
+    objects.push(cube);
+    updateObjectList();
+}
+ function addSphere() {
+    const geometry = new THREE.SphereGeometry(0.7, 32, 32);
+    const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+    const sphere = new THREE.Mesh(geometry, material);
+     sphere.scale.set(1,1,1);
+    sphere.name = `Sphere ${objects.length + 1}`;
+    scene.add(sphere);
+    objects.push(sphere);
+    updateObjectList();
+}
+function addTorus() {
+    const geometry = new THREE.TorusGeometry( 0.7, 0.2, 16, 100 );
+    const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+    const torus = new THREE.Mesh(geometry, material);
+    torus.scale.set(1,1,1);
+    torus.name = `Torus ${objects.length + 1}`;
+    scene.add(torus);
+    objects.push(torus);
+    updateObjectList();
+}
+ function addPlane() {
+    const geometry = new THREE.PlaneGeometry( 5, 5 );
+    const material = new THREE.MeshLambertMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide} );
+    const plane = new THREE.Mesh(geometry, material );
+    plane.scale.set(1,1,1);
+    plane.name = `Plane ${objects.length + 1}`;
+    scene.add(plane);
+    objects.push(plane);
+    updateObjectList();
+}
+ function addAmbientLight(){
+    const light = new THREE.AmbientLight( 0xffffff, 0.5 );
+    light.name = 'Ambient Light';
+    scene.add(light)
+    updateObjectList();
+}
+function addSpotLight(){
+    const light = new THREE.SpotLight( 0xffffff, 1 );
+    light.position.set( 1, 5, 1 );
+    light.castShadow = true;
+    light.name = 'Spot Light';
+    scene.add( light );
+    updateObjectList()
+}
+function addDirectionalLight() {
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(1, 1, 1).normalize();
+    light.name = 'Directional Light'
+    scene.add(light);
+    updateObjectList();
+}
+function addPointLight() {
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(2, 2, 2);
+    light.name = 'Point Light'
+    scene.add(light);
+    updateObjectList();
+}
+ function changeMaterial(materialType){
+    if(!selectedObject) return;
+    let material;
+    if(materialType === 'basic'){
+         if(selectedPart && selectedPart.material){
+            material = new THREE.MeshBasicMaterial({ color: selectedPart.material.color })
+          }
+         else if (selectedPart && typeof selectedPart === 'number'){
+              material = new THREE.MeshBasicMaterial({ color: document.getElementById('object-color-picker').value })
+         }
+         else {
+           material = new THREE.MeshBasicMaterial({ color: selectedObject.material.color })
+         }
+    }
+    if(materialType === 'lambert'){
+        if(selectedPart && selectedPart.material){
+            material = new THREE.MeshLambertMaterial({ color: selectedPart.material.color })
+          }
+         else if (selectedPart && typeof selectedPart === 'number'){
+              material = new THREE.MeshLambertMaterial({ color: document.getElementById('object-color-picker').value })
+         }
+          else {
+            material = new THREE.MeshLambertMaterial({ color: selectedObject.material.color })
+         }
+    }
+    if(materialType === 'phong'){
+          if(selectedPart && selectedPart.material){
+                material = new THREE.MeshPhongMaterial({ color: selectedPart.material.color });
+          }
+         else if (selectedPart && typeof selectedPart === 'number'){
+              material = new THREE.MeshPhongMaterial({ color: document.getElementById('object-color-picker').value })
+         }
+          else {
+            material = new THREE.MeshPhongMaterial({ color: selectedObject.material.color });
+         }
+    }
+   if(selectedPart && selectedPart.material){
+       selectedPart.material = material;
+   }
+   else if(typeof selectedPart === 'number'){
+    }
+   else {
+      selectedObject.material = material;
+   }
+}
+
+function openAlbedoTextureImporter() {
+    document.getElementById('albedo-texture').click();
+}
+function loadTexture(textureType){
+    const input = document.getElementById(textureType + '-texture');
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const texture = new THREE.TextureLoader().load(event.target.result);
+        if(textureType === 'albedo'){
+            albedoTexture = texture;
+            document.getElementById('albedo-preview').style.backgroundImage = `url(${event.target.result})`;
+            document.getElementById('albedo-preview').style.backgroundSize = 'cover';
+        }
+         if (selectedObject) {
+           function applyTexture(obj){
+               if(obj.material){
+                    if (obj.material.type === 'MeshBasicMaterial') {
+                         obj.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
+                     }
+                    else if (obj.material.type === 'MeshLambertMaterial') {
+                        obj.material = new THREE.MeshLambertMaterial({ map: albedoTexture});
+                    }
+                    else if (obj.material.type === 'MeshPhongMaterial') {
+                         obj.material = new THREE.MeshPhongMaterial({ map: albedoTexture});
+                     }
+                }
+             if (obj.children && obj.children.length > 0){
+                 obj.children.forEach(child => {
+                    applyTexture(child)
+                  })
+                }
+            }
+            if(selectedPart && selectedPart.material){
+                 if (selectedPart.material.type === 'MeshBasicMaterial') {
+                     selectedPart.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
+                 }
+                else if (selectedPart.material.type === 'MeshLambertMaterial') {
+                   selectedPart.material = new THREE.MeshLambertMaterial({ map: albedoTexture});
+                 }
+                else if (selectedPart.material.type === 'MeshPhongMaterial') {
+                   selectedPart.material = new THREE.MeshPhongMaterial({ map: albedoTexture});
+                 }
+            }
+             else if (typeof selectedPart === 'number'){
+
+            }
+            else {
+                applyTexture(selectedObject)
+            }
+          }
+    };
+    reader.readAsDataURL(file);
+}
+
+function toggleCodeEditor(){
+    codeEditorContainer.style.display = codeEditorContainer.style.display === 'none' ? 'block' : 'none';
+}
+function saveCode(){
+    if(selectedObject){
+        selectedObject.script = codeEditor.value;
+    }
+    closeCodeEditor();
+}
+function closeCodeEditor(){
+    codeEditorContainer.style.display = 'none';
+}
+
+function openSceneSettings() {
+    sceneSettingsContainer.style.display = sceneSettingsContainer.style.display === 'none' ? 'block' : 'none';
+}
+ function closeSceneSettings() {
+    sceneSettingsContainer.style.display = 'none';
+}
+ function changeBackgroundColor(){
+    const color = document.getElementById('scene-background-color').value;
+    renderer.setClearColor(color);
+}
+ function changeObjectColor() {
+    if (selectedObject) {
+        const color = document.getElementById('object-color-picker').value;
+      if(selectedPart && selectedPart.material){
+            selectedPart.material.color.set(color)
+        }
+         else if(selectedPart && typeof selectedPart === 'number'){
+
+        }
+        else if (selectedObject.material) {
+            selectedObject.material.color.set(color);
+        }
+         if(selectedObject.isLight){
+           selectedObject.color.set(color);
+        }
+    }
+}
+function importOBJModel() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.obj';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if(file){
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                objLoader.load(event.target.result, (obj) => {
+                    obj.name = `OBJ ${objects.length + 1}`;
+                     scene.add(obj);
+                     objects.push(obj);
+                     updateObjectList();
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+function setTransformMode(mode){
+    transformControls.mode = mode;
+}
+scene.add(camera);
+   function compileToJavaScript() {
+const sceneData = {
+    background: scene.background && scene.background.source && scene.background.source.data ? scene.background.source.data.src : renderer.getClearColor().getHexString(),
+    objects: objects.map(obj => {
+        return {
+            type: obj.type,
+            name: obj.name,
+            geometry: obj.geometry.toJSON(),
+            material: obj.material.toJSON(),
+            position: obj.position.toArray(),
+            rotation: obj.rotation.toArray(),
+            scale: obj.scale.toArray(),
+            visible: obj.visible,
+            script: obj.script
+        };
+    }),
+    lights: scene.children.filter(child => child.isLight).map(light => {
+        return {
+            type: light.type,
+            name: light.name,
+            color: light.color.getHex(),
+             intensity: light.intensity,
+             position: light.position.toArray(),
+              target: light.target ? light.target.toArray(): null
+        }
+    })
+};
+let scriptCode = `
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        const sceneContainer = document.getElementById('scene-container');
-        renderer.setSize(sceneContainer.offsetWidth, sceneContainer.offsetHeight);
-        sceneContainer.appendChild(renderer.domElement);
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
         camera.position.z = 5;
-        const objLoader = new THREE.OBJLoader();
-        let gridHelper = new THREE.GridHelper(10, 10);
-        scene.add(gridHelper);
-        let isGridVisible = true;
-        function toggleGridHelper() {
-            isGridVisible = !isGridVisible;
-            gridHelper.visible = isGridVisible;
-        }
-        const skyboxTextureImporter = document.getElementById('skybox-texture-importer');
-        function openSkyboxTextureImporter(){
-            skyboxTextureImporter.style.display = skyboxTextureImporter.style.display === 'none' ? 'block' : 'none';
-        }
-        function loadSkyboxTexture(){
-            const input = document.getElementById('skybox-texture-input');
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const texture = new THREE.TextureLoader().load(event.target.result);
-                scene.background = texture;
-            };
-            reader.readAsDataURL(file);
-            skyboxTextureImporter.style.display = 'none';
-        }
-        function fitCamera(){
-            if(!objects || objects.length === 0) return;
-            const box = new THREE.Box3().setFromObject(scene);
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const fov = camera.fov * (Math.PI / 180);
-            let cameraZ = Math.abs(maxDim / 0.7 * Math.tan( fov / 2));
-            camera.position.z = cameraZ + center.z;
-            controls.target.copy(center);
-            controls.update();
-        }
-        function resetCamera(){
-            camera.position.set(0, 0, 5);
-            controls.target.set(0,0,0);
-            controls.update();
-        }
-        let objects = [];
-        let selectedObject = null;
-        let selectedPart = null;
-        const objectList = document.getElementById('object-list');
-        const partsPanel = document.getElementById('parts-panel');
-        const partsList = document.getElementById('parts-list');
-        function updateObjectList(){
-            objectList.innerHTML = '';
-             const allObjects = [...objects, ...scene.children.filter(child => child.isLight || child.type === 'Camera')];
-            allObjects.forEach((obj, index) => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('object-list-item');
-                const icon = obj.isLight ? '<i class="fas fa-lightbulb"></i>' : obj.type === 'Camera' ? '<i class="fas fa-video"></i>': '<i class="fas fa-cube"></i>';
-                listItem.innerHTML = `${icon} <span>${obj.name || `Object ${index + 1}`}</span>`;
-                listItem.addEventListener('click', () => {
-                    selectObject(obj);
-                });
-                if(obj === selectedObject){
-                    listItem.classList.add('selected');
-                }
-                const visibilityButton = document.createElement('button');
-                visibilityButton.innerHTML = obj.visible ? `<i class="fas fa-eye"></i>` : `<i class="fas fa-eye-slash"></i>`;
-                visibilityButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    obj.visible = !obj.visible;
-                    visibilityButton.innerHTML = obj.visible ? `<i class="fas fa-eye"></i>` : `<i class="fas fa-eye-slash"></i>`;
-                });
-                const deleteButton = document.createElement('button');
-                deleteButton.innerHTML = '<i class="fas fa-trash" style="color: red;"></i>';
-                deleteButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeObject(obj);
-                });
-                listItem.appendChild(visibilityButton);
-                listItem.appendChild(deleteButton);
-                objectList.appendChild(listItem);
-            });
-        }
-        function removeObject(obj) {
-            const index = objects.indexOf(obj);
-            if (index > -1) {
-                        scene.remove(obj);
-                objects.splice(index, 1);
-                if(selectedObject === obj){
-                   if(transformControls.object){
-                        transformControls.detach(transformControls.object)
-                    }
-                    selectedObject = null;
-                     partsPanel.style.display = 'none';
-                }
-                updateObjectList();
-            }
-            if(obj.isLight || obj.type === 'Camera'){
-                scene.remove(obj)
-                if(selectedObject === obj){
-                    if(transformControls.object){
-                        transformControls.detach(transformControls.object)
-                    }
-                    selectedObject = null;
-                }
-                 partsPanel.style.display = 'none';
-                updateObjectList()
-            }
-        }
-        function selectObject(obj){
-            selectedObject = obj;
-            updateObjectList();
-            codeEditor.value = obj.script || '';
-             if(transformControls.object){
-                 transformControls.detach(transformControls.object)
-             }
-            if(selectedObject)
-                 transformControls.attach(selectedObject);
-            if(selectedObject.material){
-                document.getElementById('object-color-picker').value = `#${selectedObject.material.color.getHexString()}`
-            }
-            if(selectedObject.isLight){
-                 document.getElementById('object-color-picker').value = `#${selectedObject.color.getHexString()}`;
-            }
-           updatePartsList();
-        }
-       function updatePartsList(){
-           partsList.innerHTML = '';
-           if(selectedObject){
-              if(selectedObject.children && selectedObject.children.length > 0){
-                    partsPanel.style.display = 'flex';
-                    selectedObject.children.forEach((part, index) => {
-                        if (part.isMesh){
-                           const listItem = document.createElement('li');
-                          listItem.classList.add('parts-list-item');
-                            listItem.innerHTML = `<span>${part.name || `Part ${index + 1}`}</span>`;
-                            listItem.addEventListener('click', () => {
-                             selectPart(part)
-                           });
-                           if(part === selectedPart){
-                               listItem.classList.add('selected')
-                             }
-                             partsList.appendChild(listItem);
-                         }
-                    });
-                }
-             else if(selectedObject.type === 'Mesh' && selectedObject.geometry && selectedObject.geometry.attributes && selectedObject.geometry.attributes.position){
-                    partsPanel.style.display = 'flex';
-                   const vertexCount = selectedObject.geometry.attributes.position.count;
-                    if(vertexCount < 2000) {
-                          for(let i = 0; i < vertexCount; i++) {
-                            const listItem = document.createElement('li');
-                            listItem.classList.add('parts-list-item');
-                            listItem.innerHTML = `<span>Vertex ${i + 1}</span>`;
-                            listItem.addEventListener('click', () => {
-                            selectPart(i)
-                            });
-                              if(i === selectedPart){
-                                  listItem.classList.add('selected');
-                             }
-                            partsList.appendChild(listItem)
-                        }
-                 }
-               else {
-                        const listItem = document.createElement('li');
-                           listItem.classList.add('parts-list-item');
-                             listItem.innerHTML = `<span>${selectedObject.name}</span>`;
-                             listItem.addEventListener('click', () => {
-                               selectPart(selectedObject)
-                            });
-                               if(selectedObject === selectedPart){
-                                  listItem.classList.add('selected');
-                             }
-                           partsList.appendChild(listItem)
-                 }
-            } else{
-                  partsPanel.style.display = 'none';
-            }
-            } else{
-                  partsPanel.style.display = 'none';
-            }
-         }
-        function selectPart(part){
-           selectedPart = part;
-           updatePartsList();
-        }
-         function copyObject(){
-             if(selectedObject){
-                  let newObject;
-                if (selectedObject.type === 'Mesh') {
-                       let geometry;
-                        if(selectedObject.geometry.type === 'BoxGeometry') {
-                             geometry = new THREE.BoxGeometry().fromJSON(selectedObject.geometry.toJSON());
-                        }
-                        else if(selectedObject.geometry.type === 'SphereGeometry') {
-                            geometry = new THREE.SphereGeometry().fromJSON(selectedObject.geometry.toJSON());
-                        }
-                         else if(selectedObject.geometry.type === 'TorusGeometry') {
-                             geometry = new THREE.TorusGeometry().fromJSON(selectedObject.geometry.toJSON());
-                        }
-                         else if(selectedObject.geometry.type === 'PlaneGeometry') {
-                             geometry = new THREE.PlaneGeometry().fromJSON(selectedObject.geometry.toJSON());
-                        }
-                   const material = selectedObject.material.clone();
-                   newObject = new THREE.Mesh(geometry, material);
-                }
-                else if(selectedObject.isLight) {
-                      if(selectedObject.type === 'DirectionalLight')
-                       newObject = new THREE.DirectionalLight().copy(selectedObject);
-                     else if(selectedObject.type === 'PointLight')
-                         newObject = new THREE.PointLight().copy(selectedObject);
-                    else if(selectedObject.type === 'AmbientLight')
-                         newObject = new THREE.AmbientLight().copy(selectedObject)
-                      else if(selectedObject.type === 'SpotLight')
-                         newObject = new THREE.SpotLight().copy(selectedObject);
-                }
-               if(newObject){
-                    newObject.position.set(selectedObject.position.x + 1, selectedObject.position.y +1, selectedObject.position.z + 1);
-                   newObject.name = `${selectedObject.name} copy`;
-                     scene.add(newObject);
-                      objects.push(newObject);
-                    updateObjectList();
-               }
-          }
-        }
-        function addCube() {
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
-            const cube = new THREE.Mesh(geometry, material);
-             cube.scale.set(1,1,1);
-            cube.name = `Cube ${objects.length + 1}`;
-            scene.add(cube);
-            objects.push(cube);
-            updateObjectList();
-        }
-         function addSphere() {
-            const geometry = new THREE.SphereGeometry(0.7, 32, 32);
-            const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
-            const sphere = new THREE.Mesh(geometry, material);
-             sphere.scale.set(1,1,1);
-            sphere.name = `Sphere ${objects.length + 1}`;
-            scene.add(sphere);
-            objects.push(sphere);
-            updateObjectList();
-        }
-        function addTorus() {
-            const geometry = new THREE.TorusGeometry( 0.7, 0.2, 16, 100 );
-            const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
-            const torus = new THREE.Mesh(geometry, material);
-            torus.scale.set(1,1,1);
-            torus.name = `Torus ${objects.length + 1}`;
-            scene.add(torus);
-            objects.push(torus);
-            updateObjectList();
-        }
-         function addPlane() {
-            const geometry = new THREE.PlaneGeometry( 5, 5 );
-            const material = new THREE.MeshLambertMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide} );
-            const plane = new THREE.Mesh(geometry, material );
-            plane.scale.set(1,1,1);
-            plane.name = `Plane ${objects.length + 1}`;
-            scene.add(plane);
-            objects.push(plane);
-            updateObjectList();
-        }
-         function addAmbientLight(){
-            const light = new THREE.AmbientLight( 0xffffff, 0.5 );
-            light.name = 'Ambient Light';
-            scene.add(light)
-            updateObjectList();
+        `;
+if(sceneData.background){
+    if(typeof sceneData.background === 'string') {
+        scriptCode += `renderer.setClearColor('${sceneData.background}');`;
     }
-    function addSpotLight(){
-        const light = new THREE.SpotLight( 0xffffff, 1 );
-        light.position.set( 1, 5, 1 );
-        light.castShadow = true;
-        light.name = 'Spot Light';
-        scene.add( light );
-        updateObjectList()
+    else if (sceneData.background.src){
+        scriptCode += `scene.background = new THREE.TextureLoader().load('${sceneData.background.src}');`
     }
-        function addDirectionalLight() {
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(1, 1, 1).normalize();
-            light.name = 'Directional Light'
-            scene.add(light);
-            updateObjectList();
-        }
-        function addPointLight() {
-            const light = new THREE.PointLight(0xffffff, 1, 100);
-            light.position.set(2, 2, 2);
-            light.name = 'Point Light'
-            scene.add(light);
-            updateObjectList();
-        }
-         function changeMaterial(materialType){
-            if(!selectedObject) return;
-            let material;
-            if(materialType === 'basic'){
-                 if(selectedPart && selectedPart.material){
-                    material = new THREE.MeshBasicMaterial({ color: selectedPart.material.color })
-                  }
-                 else if (selectedPart && typeof selectedPart === 'number'){
-                      material = new THREE.MeshBasicMaterial({ color: document.getElementById('object-color-picker').value })
-                 }
-                 else {
-                   material = new THREE.MeshBasicMaterial({ color: selectedObject.material.color })
-                 }
-            }
-            if(materialType === 'lambert'){
-                if(selectedPart && selectedPart.material){
-                    material = new THREE.MeshLambertMaterial({ color: selectedPart.material.color })
-                  }
-                 else if (selectedPart && typeof selectedPart === 'number'){
-                      material = new THREE.MeshLambertMaterial({ color: document.getElementById('object-color-picker').value })
-                 }
-                  else {
-                    material = new THREE.MeshLambertMaterial({ color: selectedObject.material.color })
-                 }
-            }
-            if(materialType === 'phong'){
-                  if(selectedPart && selectedPart.material){
-                        material = new THREE.MeshPhongMaterial({ color: selectedPart.material.color });
-                  }
-                 else if (selectedPart && typeof selectedPart === 'number'){
-                      material = new THREE.MeshPhongMaterial({ color: document.getElementById('object-color-picker').value })
-                 }
-                  else {
-                    material = new THREE.MeshPhongMaterial({ color: selectedObject.material.color });
-                 }
-            }
-           if(selectedPart && selectedPart.material){
-               selectedPart.material = material;
-           }
-           else if(typeof selectedPart === 'number'){
-            }
-           else {
-              selectedObject.material = material;
-           }
-        }
-       let albedoTexture = null;
-        function openAlbedoTextureImporter() {
-            document.getElementById('albedo-texture').click();
-        }
-        function loadTexture(textureType){
-            const input = document.getElementById(textureType + '-texture');
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const texture = new THREE.TextureLoader().load(event.target.result);
-                if(textureType === 'albedo'){
-                    albedoTexture = texture;
-                    document.getElementById('albedo-preview').style.backgroundImage = `url(${event.target.result})`;
-                    document.getElementById('albedo-preview').style.backgroundSize = 'cover';
-                }
-                 if (selectedObject) {
-                   function applyTexture(obj){
-                       if(obj.material){
-                            if (obj.material.type === 'MeshBasicMaterial') {
-                                 obj.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
-                             }
-                            else if (obj.material.type === 'MeshLambertMaterial') {
-                                obj.material = new THREE.MeshLambertMaterial({ map: albedoTexture});
-                            }
-                            else if (obj.material.type === 'MeshPhongMaterial') {
-                                 obj.material = new THREE.MeshPhongMaterial({ map: albedoTexture});
-                             }
-                        }
-                     if (obj.children && obj.children.length > 0){
-                         obj.children.forEach(child => {
-                            applyTexture(child)
-                          })
-                        }
-                    }
-                    if(selectedPart && selectedPart.material){
-                         if (selectedPart.material.type === 'MeshBasicMaterial') {
-                             selectedPart.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
-                         }
-                        else if (selectedPart.material.type === 'MeshLambertMaterial') {
-                           selectedPart.material = new THREE.MeshLambertMaterial({ map: albedoTexture});
-                         }
-                        else if (selectedPart.material.type === 'MeshPhongMaterial') {
-                           selectedPart.material = new THREE.MeshPhongMaterial({ map: albedoTexture});
-                         }
-                    }
-                     else if (typeof selectedPart === 'number'){
 
-                    }
-                    else {
-                        applyTexture(selectedObject)
-                    }
-                  }
-            };
-            reader.readAsDataURL(file);
-        }
-        const codeEditorContainer = document.getElementById('code-editor-container')
-        const codeEditor = document.getElementById('code-editor');
-        function toggleCodeEditor(){
-            codeEditorContainer.style.display = codeEditorContainer.style.display === 'none' ? 'block' : 'none';
-        }
-        function saveCode(){
-            if(selectedObject){
-                selectedObject.script = codeEditor.value;
-            }
-            closeCodeEditor();
-        }
-        function closeCodeEditor(){
-            codeEditorContainer.style.display = 'none';
-        }
-        const sceneSettingsContainer = document.getElementById('scene-settings-container');
-        const sceneBackgroundColorInput = document.getElementById('scene-background-color');
-         sceneBackgroundColorInput.addEventListener('input', changeBackgroundColor); // Aplicar cor ao mudar
-        function openSceneSettings() {
-            sceneSettingsContainer.style.display = sceneSettingsContainer.style.display === 'none' ? 'block' : 'none';
-        }
-         function closeSceneSettings() {
-            sceneSettingsContainer.style.display = 'none';
-        }
-         function changeBackgroundColor(){
-            const color = document.getElementById('scene-background-color').value;
-            renderer.setClearColor(color);
-        }
-         function changeObjectColor() {
-            if (selectedObject) {
-                const color = document.getElementById('object-color-picker').value;
-              if(selectedPart && selectedPart.material){
-                    selectedPart.material.color.set(color)
-                }
-                 else if(selectedPart && typeof selectedPart === 'number'){
+}
 
-                }
-                else if (selectedObject.material) {
-                    selectedObject.material.color.set(color);
-                }
-                 if(selectedObject.isLight){
-                   selectedObject.color.set(color);
-                }
+sceneData.objects.forEach(objData => {
+        scriptCode += `\n//Creating ${objData.name}\n`;
+      if(objData.type === 'Mesh') {
+            let geometryCode = ``;
+           if(objData.geometry.type === 'BoxGeometry') {
+                geometryCode = `const geometry = THREE.BoxGeometry.fromJSON(${JSON.stringify(objData.geometry)})`;
             }
-        }
-        function importOBJModel() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.obj';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if(file){
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        objLoader.load(event.target.result, (obj) => {
-                            obj.name = `OBJ ${objects.length + 1}`;
-                             scene.add(obj);
-                             objects.push(obj);
-                             updateObjectList();
-                        });
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-            input.click();
-        }
-        const transformControls = new THREE.TransformControls( camera, renderer.domElement );
-        scene.add( transformControls );
-        transformControls.addEventListener( 'dragging-changed', function ( event ) {
-            controls.enabled = ! event.value;
-        } );
-        function setTransformMode(mode){
-            transformControls.mode = mode;
-        }
-        scene.add(camera);
-           function compileToJavaScript() {
-       const sceneData = {
-           background: scene.background && scene.background.source && scene.background.source.data ? scene.background.source.data.src : renderer.getClearColor().getHexString(),
-           objects: objects.map(obj => {
-               return {
-                   type: obj.type,
-                   name: obj.name,
-                   geometry: obj.geometry.toJSON(),
-                   material: obj.material.toJSON(),
-                   position: obj.position.toArray(),
-                   rotation: obj.rotation.toArray(),
-                   scale: obj.scale.toArray(),
-                   visible: obj.visible,
-                   script: obj.script
-               };
-           }),
-           lights: scene.children.filter(child => child.isLight).map(light => {
-               return {
-                   type: light.type,
-                   name: light.name,
-                   color: light.color.getHex(),
-                    intensity: light.intensity,
-                    position: light.position.toArray(),
-                     target: light.target ? light.target.toArray(): null
-               }
-           })
-       };
-      let scriptCode = `
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.appendChild(renderer.domElement);
-            camera.position.z = 5;
-            `;
-       if(sceneData.background){
-            if(typeof sceneData.background === 'string') {
-                scriptCode += `renderer.setClearColor('${sceneData.background}');`;
+            else if(objData.geometry.type === 'SphereGeometry') {
+                geometryCode = `const geometry = THREE.SphereGeometry.fromJSON(${JSON.stringify(objData.geometry)})`;
             }
-            else if (sceneData.background.src){
-                scriptCode += `scene.background = new THREE.TextureLoader().load('${sceneData.background.src}');`
-            }
-
-        }
-
-    sceneData.objects.forEach(objData => {
-            scriptCode += `\n//Creating ${objData.name}\n`;
-          if(objData.type === 'Mesh') {
-                let geometryCode = ``;
-               if(objData.geometry.type === 'BoxGeometry') {
-                    geometryCode = `const geometry = THREE.BoxGeometry.fromJSON(${JSON.stringify(objData.geometry)})`;
-                }
-                else if(objData.geometry.type === 'SphereGeometry') {
-                    geometryCode = `const geometry = THREE.SphereGeometry.fromJSON(${JSON.stringify(objData.geometry)})`;
-                }
-                  else if(objData.geometry.type === 'TorusGeometry') {
-                    geometryCode = `const geometry = THREE.TorusGeometry.fromJSON(${JSON.stringify(objData.geometry)})`;
-                  }
-                  else if(objData.geometry.type === 'PlaneGeometry'){
-                       geometryCode = `const geometry = THREE.PlaneGeometry.fromJSON(${JSON.stringify(objData.geometry)})`
-                 }
-                scriptCode += geometryCode + ';';
-            }
-
-        let materialCode = ``;
-           if (objData.material.type === 'MeshBasicMaterial') {
-                materialCode = `const material = THREE.MeshBasicMaterial.fromJSON(${JSON.stringify(objData.material)});`;
-                if(objData.material.map){
-                    materialCode =  `const texture = new THREE.TextureLoader().load('${objData.material.map.image.src}'); material.map = texture;`;
-                }
-
-          } else if (objData.material.type === 'MeshLambertMaterial') {
-              materialCode = `const material = THREE.MeshLambertMaterial.fromJSON(${JSON.stringify(objData.material)});`;
-                 if(objData.material.map){
-                    materialCode +=  `const texture = new THREE.TextureLoader().load('${objData.material.map.image.src}'); material.map = texture;`;
-                }
-          } else if (objData.material.type === 'MeshPhongMaterial') {
-              materialCode = `const material = THREE.MeshPhongMaterial.fromJSON(${JSON.stringify(objData.material)});`
-               if(objData.material.map){
-                    materialCode +=  `const texture = new THREE.TextureLoader().load('${objData.material.map.image.src}'); material.map = texture;`;
-                }
-          }
-        scriptCode +=  materialCode;
-
-             scriptCode += `const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(${objData.position[0]}, ${objData.position[1]}, ${objData.position[2]});
-             mesh.rotation.set(${objData.rotation[0]}, ${objData.rotation[1]}, ${objData.rotation[2]});
-             mesh.scale.set(${objData.scale[0]}, ${objData.scale[1]}, ${objData.scale[2]});
-             mesh.visible = ${objData.visible};
-            mesh.name = '${objData.name}';`;
-            if(objData.script){
-             scriptCode += `\n mesh.script = ${JSON.stringify(objData.script)};`;
-            }
-              scriptCode += `scene.add(mesh);`;
-       });
-         sceneData.lights.forEach(lightData => {
-            scriptCode += `\n//Creating ${lightData.name}\n`;
-            if (lightData.type === 'DirectionalLight'){
-                scriptCode += `const light = new THREE.DirectionalLight(${lightData.color}, ${lightData.intensity});
-                light.position.set(${lightData.position[0]},${lightData.position[1]},${lightData.position[2]});`;
-            }
-              else if(lightData.type === 'PointLight'){
-                scriptCode += `const light = new THREE.PointLight(${lightData.color}, ${lightData.intensity}, 100);
-                light.position.set(${lightData.position[0]},${lightData.position[1]},${lightData.position[2]});`;
+              else if(objData.geometry.type === 'TorusGeometry') {
+                geometryCode = `const geometry = THREE.TorusGeometry.fromJSON(${JSON.stringify(objData.geometry)})`;
+              }
+              else if(objData.geometry.type === 'PlaneGeometry'){
+                   geometryCode = `const geometry = THREE.PlaneGeometry.fromJSON(${JSON.stringify(objData.geometry)})`
              }
-             else if(lightData.type === 'AmbientLight'){
-                 scriptCode +=`const light = new THREE.AmbientLight(${lightData.color}, ${lightData.intensity});`;
-             }
-              else if (lightData.type === 'SpotLight'){
-                    scriptCode += `const light = new THREE.SpotLight(${lightData.color}, ${lightData.intensity});
-                 light.position.set(${lightData.position[0]}, ${lightData.position[1]}, ${lightData.position[2]});
-                    light.castShadow = true;`;
-                 if(lightData.target){
-                    scriptCode += `light.target.set(${lightData.target[0]}, ${lightData.target[1]}, ${lightData.target[2]});`;
-                  }
-                }
-             scriptCode += `light.name = '${lightData.name}'; scene.add(light);`;
-        });
-            scriptCode += `
-                function animate() {
-                    requestAnimationFrame(animate);
-                    renderer.render(scene, camera);
-                     scene.children.forEach(child => {
-                        if(child.script){
-                          try{
-                            const animFunction = new Function('object', 'time', child.script);
-                            animFunction(child, Date.now());
-                         } catch(error){
-                            console.log(error);
-                         }
-                      }
-                   })
-
-                }
-                animate();
-            `;
-      document.getElementById('compiled-code').value = scriptCode;
-      document.getElementById('compilation-panel').style.display = 'flex';
-    }
-        function copyCompiledCode(){
-            const codeArea = document.getElementById('compiled-code');
-            codeArea.select();
-            document.execCommand('copy');
-         }
-        function downloadCompiledCode() {
-            const code = document.getElementById('compiled-code').value;
-            const blob = new Blob([code], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'scene.js';
-             document.body.appendChild(a);
-            a.click();
-             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            scriptCode += geometryCode + ';';
         }
-        function closeCompilationPanel(){
-            document.getElementById('compilation-panel').style.display = 'none';
+
+    let materialCode = ``;
+       if (objData.material.type === 'MeshBasicMaterial') {
+            materialCode = `const material = THREE.MeshBasicMaterial.fromJSON(${JSON.stringify(objData.material)});`;
+            if(objData.material.map){
+                materialCode =  `const texture = new THREE.TextureLoader().load('${objData.material.map.image.src}'); material.map = texture;`;
+            }
+
+      } else if (objData.material.type === 'MeshLambertMaterial') {
+          materialCode = `const material = THREE.MeshLambertMaterial.fromJSON(${JSON.stringify(objData.material)});`;
+             if(objData.material.map){
+                materialCode +=  `const texture = new THREE.TextureLoader().load('${objData.material.map.image.src}'); material.map = texture;`;
+            }
+      } else if (objData.material.type === 'MeshPhongMaterial') {
+          materialCode = `const material = THREE.MeshPhongMaterial.fromJSON(${JSON.stringify(objData.material)});`
+           if(objData.material.map){
+                materialCode +=  `const texture = new THREE.TextureLoader().load('${objData.material.map.image.src}'); material.map = texture;`;
+            }
+      }
+    scriptCode +=  materialCode;
+
+         scriptCode += `const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(${objData.position[0]}, ${objData.position[1]}, ${objData.position[2]});
+         mesh.rotation.set(${objData.rotation[0]}, ${objData.rotation[1]}, ${objData.rotation[2]});
+         mesh.scale.set(${objData.scale[0]}, ${objData.scale[1]}, ${objData.scale[2]});
+         mesh.visible = ${objData.visible};
+        mesh.name = '${objData.name}';`;
+        if(objData.script){
+         scriptCode += `\n mesh.script = ${JSON.stringify(objData.script)};`;
+        }
+          scriptCode += `scene.add(mesh);`;
+   });
+     sceneData.lights.forEach(lightData => {
+        scriptCode += `\n//Creating ${lightData.name}\n`;
+        if (lightData.type === 'DirectionalLight'){
+            scriptCode += `const light = new THREE.DirectionalLight(${lightData.color}, ${lightData.intensity});
+            light.position.set(${lightData.position[0]},${lightData.position[1]},${lightData.position[2]});`;
+        }
+          else if(lightData.type === 'PointLight'){
+            scriptCode += `const light = new THREE.PointLight(${lightData.color}, ${lightData.intensity}, 100);
+            light.position.set(${lightData.position[0]},${lightData.position[1]},${lightData.position[2]});`;
          }
-            function saveScene() {
-        const sceneData = {
-           background: scene.background && scene.background.source && scene.background.source.data ? scene.background.source.data.src : renderer.getClearColor().getHexString(),
-            objects: objects.map(obj => {
-                return {
-                    type: obj.type,
-                    name: obj.name,
-                    geometry: obj.geometry.toJSON(),
-                    material: obj.material.toJSON(),
-                    position: obj.position.toArray(),
-                    rotation: obj.rotation.toArray(),
-                    scale: obj.scale.toArray(),
-                    visible: obj.visible,
-                    script: obj.script
-                };
-            }),
-           lights: scene.children.filter(child => child.isLight).map(light => {
-               return {
-                   type: light.type,
-                   name: light.name,
-                   color: light.color.getHex(),
-                    intensity: light.intensity,
-                    position: light.position.toArray(),
-                     target: light.target ? light.target.toArray(): null
-               }
-           })
+         else if(lightData.type === 'AmbientLight'){
+             scriptCode +=`const light = new THREE.AmbientLight(${lightData.color}, ${lightData.intensity});`;
+         }
+          else if (lightData.type === 'SpotLight'){
+                scriptCode += `const light = new THREE.SpotLight(${lightData.color}, ${lightData.intensity});
+             light.position.set(${lightData.position[0]}, ${lightData.position[1]}, ${lightData.position[2]});
+                light.castShadow = true;`;
+             if(lightData.target){
+                scriptCode += `light.target.set(${lightData.target[0]}, ${lightData.target[1]}, ${lightData.target[2]});`;
+              }
+            }
+         scriptCode += `light.name = '${lightData.name}'; scene.add(light);`;
+    });
+        scriptCode += `
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+                 scene.children.forEach(child => {
+                    if(child.script){
+                      try{
+                        const animFunction = new Function('object', 'time', child.script);
+                        animFunction(child, Date.now());
+                     } catch(error){
+                        console.log(error);
+                     }
+                  }
+               })
+
+            }
+            animate();
+        `;
+  document.getElementById('compiled-code').value = scriptCode;
+  document.getElementById('compilation-panel').style.display = 'flex';
+}
+function copyCompiledCode(){
+    const codeArea = document.getElementById('compiled-code');
+    codeArea.select();
+    document.execCommand('copy');
+ }
+function downloadCompiledCode() {
+    const code = document.getElementById('compiled-code').value;
+    const blob = new Blob([code], { type: 'text/javascript' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'scene.js';
+     document.body.appendChild(a);
+    a.click();
+     document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+function closeCompilationPanel(){
+    document.getElementById('compilation-panel').style.display = 'none';
+ }
+    function saveScene() {
+const sceneData = {
+   background: scene.background && scene.background.source && scene.background.source.data ? scene.background.source.data.src : renderer.getClearColor().getHexString(),
+    objects: objects.map(obj => {
+        return {
+            type: obj.type,
+            name: obj.name,
+            geometry: obj.geometry.toJSON(),
+            material: obj.material.toJSON(),
+            position: obj.position.toArray(),
+            rotation: obj.rotation.toArray(),
+            scale: obj.scale.toArray(),
+            visible: obj.visible,
+            script: obj.script
         };
-        const jsonData = JSON.stringify(sceneData);
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'scene.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-        function loadScene(){
-       const input = document.createElement('input');
-       input.type = 'file';
-       input.accept = '.json';
-       input.onchange = (e) => {
-           const file = e.target.files[0];
-           if(file){
-               const reader = new FileReader();
-               reader.onload = (event) => {
-                   try{
-                       const sceneData = JSON.parse(event.target.result);
-                         // Clear existing scene
-                       objects.forEach(obj => scene.remove(obj));
-                       scene.children.filter(child => child.isLight || child.type === 'Camera').forEach(obj => scene.remove(obj));
-                       objects = [];
-
-                        //Load background
-                         if(sceneData.background){
-                             if(typeof sceneData.background === 'string') {
-                                 renderer.setClearColor(sceneData.background);
-                             } else if (sceneData.background.src){
-                                   const texture = new THREE.TextureLoader().load(sceneData.background.src);
-                                    scene.background = texture
-                             }
-                         }
-                         //load objects
-                       sceneData.objects.forEach(objData => {
-                           let geometry;
-                           if(objData.type === 'Mesh') {
-                               if(objData.geometry.type === 'BoxGeometry') {
-                                   geometry = THREE.BoxGeometry.fromJSON(objData.geometry);
-                               }
-                               else if(objData.geometry.type === 'SphereGeometry') {
-                                   geometry = THREE.SphereGeometry.fromJSON(objData.geometry);
-                               }
-                               else if(objData.geometry.type === 'TorusGeometry') {
-                                    geometry = THREE.TorusGeometry.fromJSON(objData.geometry);
-                                }
-                                else if(objData.geometry.type === 'PlaneGeometry'){
-                                    geometry = THREE.PlaneGeometry.fromJSON(objData.geometry)
-                                }
-
-                           }
-
-                          let material;
-
-                             if (objData.material.type === 'MeshBasicMaterial') {
-                                 material = THREE.MeshBasicMaterial.fromJSON(objData.material);
-                                  if(objData.material.map){
-                                        const texture = new THREE.TextureLoader().load(objData.material.map.image.src)
-                                    material.map = texture;
-                                }
-
-                            }
-                            else if (objData.material.type === 'MeshLambertMaterial') {
-                                 material = THREE.MeshLambertMaterial.fromJSON(objData.material)
-                                 if(objData.material.map){
-                                    const texture = new THREE.TextureLoader().load(objData.material.map.image.src)
-                                    material.map = texture;
-                                }
-                            }
-                            else if(objData.material.type === 'MeshPhongMaterial') {
-                                  material = THREE.MeshPhongMaterial.fromJSON(objData.material);
-                                    if(objData.material.map){
-                                        const texture = new THREE.TextureLoader().load(objData.material.map.image.src)
-                                    material.map = texture;
-                                }
-                            }
-                           const mesh = new THREE.Mesh(geometry, material);
-                            mesh.position.fromArray(objData.position);
-                            mesh.rotation.fromArray(objData.rotation);
-                            mesh.scale.fromArray(objData.scale);
-                            mesh.visible = objData.visible;
-                            mesh.name = objData.name;
-                            mesh.script = objData.script;
-                            scene.add(mesh);
-                            objects.push(mesh);
-                       });
-                       sceneData.lights.forEach(lightData => {
-                           let light;
-                           if (lightData.type === 'DirectionalLight'){
-                               light = new THREE.DirectionalLight(lightData.color, lightData.intensity)
-                                light.position.fromArray(lightData.position);
-                           }
-                           else if(lightData.type === 'PointLight'){
-                               light = new THREE.PointLight(lightData.color, lightData.intensity, 100);
-                                light.position.fromArray(lightData.position)
-                            }
-                           else if(lightData.type === 'AmbientLight'){
-                               light = new THREE.AmbientLight(lightData.color, lightData.intensity)
-                            }
-                             else if (lightData.type === 'SpotLight'){
-                                light = new THREE.SpotLight(lightData.color, lightData.intensity)
-                                 light.position.fromArray(lightData.position);
-                                 if(lightData.target){
-                                       light.target.set(lightData.target[0], lightData.target[1], lightData.target[2])
-                                 }
-                            }
-                           light.name = lightData.name;
-                            scene.add(light);
-
-                       });
-                        updateObjectList();
-                       fitCamera()
-                   } catch(error){
-                        console.log('Erro ao carregar cena:', error)
-                   }
-               };
-               reader.readAsText(file);
-           }
+    }),
+   lights: scene.children.filter(child => child.isLight).map(light => {
+       return {
+           type: light.type,
+           name: light.name,
+           color: light.color.getHex(),
+            intensity: light.intensity,
+            position: light.position.toArray(),
+             target: light.target ? light.target.toArray(): null
        }
-       input.click();
+   })
+};
+const jsonData = JSON.stringify(sceneData);
+const blob = new Blob([jsonData], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'scene.json';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+function loadScene(){
+const input = document.createElement('input');
+input.type = 'file';
+input.accept = '.json';
+input.onchange = (e) => {
+   const file = e.target.files[0];
+   if(file){
+       const reader = new FileReader();
+       reader.onload = (event) => {
+           try{
+               const sceneData = JSON.parse(event.target.result);
+                 // Clear existing scene
+               objects.forEach(obj => scene.remove(obj));
+               scene.children.filter(child => child.isLight || child.type === 'Camera').forEach(obj => scene.remove(obj));
+               objects = [];
+
+                //Load background
+                 if(sceneData.background){
+                     if(typeof sceneData.background === 'string') {
+                         renderer.setClearColor(sceneData.background);
+                     } else if (sceneData.background.src){
+                           const texture = new THREE.TextureLoader().load(sceneData.background.src);
+                            scene.background = texture
+                     }
+                 }
+                 //load objects
+               sceneData.objects.forEach(objData => {
+                   let geometry;
+                   if(objData.type === 'Mesh') {
+                       if(objData.geometry.type === 'BoxGeometry') {
+                           geometry = THREE.BoxGeometry.fromJSON(objData.geometry);
+                       }
+                       else if(objData.geometry.type === 'SphereGeometry') {
+                           geometry = THREE.SphereGeometry.fromJSON(objData.geometry);
+                       }
+                       else if(objData.geometry.type === 'TorusGeometry') {
+                            geometry = THREE.TorusGeometry.fromJSON(objData.geometry);
+                        }
+                         else if(objData.geometry.type === 'PlaneGeometry'){
+                            geometry = THREE.PlaneGeometry.fromJSON(objData.geometry)
+                        }
+
+                   }
+
+                  let material;
+
+                     if (objData.material.type === 'MeshBasicMaterial') {
+                         material = THREE.MeshBasicMaterial.fromJSON(objData.material);
+                          if(objData.material.map){
+                                const texture = new THREE.TextureLoader().load(objData.material.map.image.src)
+                            material.map = texture;
+                        }
+
+                    }
+                    else if (objData.material.type === 'MeshLambertMaterial') {
+                         material = THREE.MeshLambertMaterial.fromJSON(objData.material)
+                         if(objData.material.map){
+                            const texture = new THREE.TextureLoader().load(objData.material.map.image.src)
+                            material.map = texture;
+                        }
+                    }
+                    else if(objData.material.type === 'MeshPhongMaterial') {
+                          material = THREE.MeshPhongMaterial.fromJSON(objData.material);
+                            if(objData.material.map){
+                                const texture = new THREE.TextureLoader().load(objData.material.map.image.src)
+                            material.map = texture;
+                        }
+                    }
+                   const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.fromArray(objData.position);
+                    mesh.rotation.fromArray(objData.rotation);
+                    mesh.scale.fromArray(objData.scale);
+                    mesh.visible = objData.visible;
+                    mesh.name = objData.name;
+                    mesh.script = objData.script;
+                    scene.add(mesh);
+                    objects.push(mesh);
+               });
+               sceneData.lights.forEach(lightData => {
+                   let light;
+                   if (lightData.type === 'DirectionalLight'){
+                       light = new THREE.DirectionalLight(lightData.color, lightData.intensity)
+                        light.position.fromArray(lightData.position);
+                   }
+                   else if(lightData.type === 'PointLight'){
+                       light = new THREE.PointLight(lightData.color, lightData.intensity, 100);
+                        light.position.fromArray(lightData.position)
+                    }
+                   else if(lightData.type === 'AmbientLight'){
+                       light = new THREE.AmbientLight(lightData.color, lightData.intensity)
+                    }
+                     else if (lightData.type === 'SpotLight'){
+                        light = new THREE.SpotLight(lightData.color, lightData.intensity)
+                         light.position.fromArray(lightData.position);
+                         if(lightData.target){
+                               light.target.set(lightData.target[0], lightData.target[1], lightData.target[2])
+                         }
+                    }
+                   light.name = lightData.name;
+                    scene.add(light);
+
+               });
+                updateObjectList();
+               fitCamera()
+           } catch(error){
+                console.log('Erro ao carregar cena:', error)
+           }
+       };
+       reader.readAsText(file);
    }
-        let lastTime = 0;
-        let frameCount = 0;
-        let fps = 30;
-         fitCamera();
-          sceneContainer.addEventListener('click', (event) => {
-            const mouse = new THREE.Vector2();
-            mouse.x = (event.clientX / sceneContainer.offsetWidth) * 2 - 1;
-            mouse.y = -(event.clientY / sceneContainer.offsetHeight) * 2 + 1;
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(objects);
-            if(intersects.length > 0){
-                selectObject(intersects[0].object);
-            }
-            else {
-                selectObject(null);
-            }
-        });
-       // Função para redimensionar o canvas
-        function onWindowResize() {
-            const newWidth = sceneContainer.offsetWidth;
-            const newHeight = sceneContainer.offsetHeight;
+}
+input.click();
+}
+let lastTime = 0;
+let frameCount = 0;
+let fps = 30;
+ fitCamera();
+  sceneContainer.addEventListener('click', (event) => {
+    const mouse = new THREE.Vector2();
+    mouse.x = (event.clientX / sceneContainer.offsetWidth) * 2 - 1;
+    mouse.y = -(event.clientY / sceneContainer.offsetHeight) * 2 + 1;
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(objects);
+    if(intersects.length > 0){
+        selectObject(intersects[0].object);
+    }
+    else {
+        selectObject(null);
+    }
+});
+// Função para redimensionar o canvas
+function onWindowResize() {
+    const newWidth = sceneContainer.offsetWidth;
+    const newHeight = sceneContainer.offsetHeight;
 
-            renderer.setSize(newWidth, newHeight);
-            camera.aspect = newWidth / newHeight;
-            camera.updateProjectionMatrix();
+    renderer.setSize(newWidth, newHeight);
+    camera.aspect = newWidth / newHeight;
+    camera.updateProjectionMatrix();
+}
+
+// Adiciona o ouvinte de evento resize
+window.addEventListener('resize', onWindowResize, false);
+function animate(time) {
+    const deltaTime = (time - lastTime) / 1000;
+    lastTime = time;
+
+    if(selectedObject && selectedObject.script){
+        try{
+            const animFunction = new Function('object', 'time', selectedObject.script);
+            animFunction(selectedObject, time);
+        } catch(error){
+            console.log(error);
         }
+    }
+    controls.update();
+    frameCount++;
+    if(frameCount >= 10) {
+        fps =  Math.round(1 / deltaTime);
+        document.getElementById('fps-counter').textContent = fps;
+        frameCount = 0;
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+}
+animate();
 
-        // Adiciona o ouvinte de evento resize
-        window.addEventListener('resize', onWindowResize, false);
-        function animate(time) {
-            const deltaTime = (time - lastTime) / 1000;
-            lastTime = time;
-
-            if(selectedObject && selectedObject.script){
-                try{
-                    const animFunction = new Function('object', 'time', selectedObject.script);
-                    animFunction(selectedObject, time);
-                } catch(error){
-                    console.log(error);
-                }
-            }
-            controls.update();
-            frameCount++;
-            if(frameCount >= 10) {
-                fps =  Math.round(1 / deltaTime);
-                document.getElementById('fps-counter').textContent = fps;
-                frameCount = 0;
-            }
-            renderer.render(scene, camera);
-            requestAnimationFrame(animate);
-        }
-        animate();
-    </script>
+// Event listeners for buttons
+document.getElementById('add-cube-btn').addEventListener('click', addCube);
+document.getElementById('add-sphere-btn').addEventListener('click', addSphere);
+document.getElementById('add-torus-btn').addEventListener('click', addTorus);
+document.getElementById('add-plane-btn').addEventListener('click', addPlane);
+document.getElementById('add-ambient-light-btn').addEventListener('click', addAmbientLight);
+document.getElementById('add-directional-light-btn').addEventListener('click', addDirectionalLight);
+document.getElementById('add-point-light-btn').addEventListener('click', addPointLight);
+document.getElementById('add-spot-light-btn').addEventListener('click', addSpotLight);
+document.getElementById('toggle-grid-btn').addEventListener('click', toggleGridHelper);
+document.getElementById('open-scene-settings-btn').addEventListener('click', openSceneSettings);
+document.getElementById('import-obj-btn').addEventListener('click', importOBJModel);
+document.getElementById('reset-camera-btn').addEventListener('click', resetCamera);
+document.getElementById('fit-camera-btn').addEventListener('click', fitCamera);
+document.getElementById('compile-js-btn').addEventListener('click', compileToJavaScript);
+document.getElementById('translate-mode-btn').addEventListener('click', () => setTransformMode('translate'));
+document.getElementById('rotate-mode-btn').addEventListener('click', () => setTransformMode('rotate'));
+document.getElementById('scale-mode-btn').addEventListener('click', () => setTransformMode('scale'));
+document.getElementById('copy-object-btn').addEventListener('click', copyObject);
+document.getElementById('save-scene-btn').addEventListener('click', saveScene);
+document.getElementById('remove-object-btn').addEventListener('click', () => removeObject(selectedObject));
+document.getElementById('material-basic-btn').addEventListener('click', () => changeMaterial('basic'));
+document.getElementById('material-lambert-btn').addEventListener('click', () => changeMaterial('lambert'));
+document.getElementById('material-phong-btn').addEventListener('click', () => changeMaterial('phong'));
+document.getElementById('open-albedo-texture-importer-btn').addEventListener('click', openAlbedoTextureImporter);
+document.getElementById('albedo-texture').addEventListener('change', () => loadTexture('albedo'));
+document.getElementById('object-color-picker').addEventListener('input', changeObjectColor);
+document.getElementById('skybox-texture-input').addEventListener('change', loadSkyboxTexture);
+document.getElementById('save-code-btn').addEventListener('click', saveCode);
+document.getElementById('close-code-editor-btn').addEventListener('click', closeCodeEditor);
+document.getElementById('close-scene-settings-btn').addEventListener('click', closeSceneSettings);
+document.getElementById('copy-compiled-code-btn').addEventListener('click', copyCompiledCode);
+document.getElementById('download-compiled-code-btn').addEventListener('click', downloadCompiledCode);
+document.getElementById('close-compilation-panel-btn').addEventListener('click',closeCompilationPanel);
+</script>
 </body>
 </html>
