@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelador 3D</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Same styles as before, with focused adjustments for the object panel */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #181818;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        @media (min-width: 768px) {
+            body {
+                flex-direction: row;
+            }
+        }
+        .toolbar {
+            background-color: #202020;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            flex-shrink: 0;
+        }
+        .toolbar-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .left-toolbar {
+            display: flex;
+            gap: 10px;
+        }
+        .right-toolbar {
+            display: flex;
+            gap: 10px;
+        }
+        .icon-button {
+            background: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .icon-button:hover {
+            background-color: #333;
+        }
+        .settings-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .settings-buttons button {
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .settings-buttons button:hover {
+            background-color: #333;
+        }
+        .status-bar {
+            background-color: #202020;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #333;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        #scene-container {
+            width: 100%;
+            height: 100%;
+            background-color: #252525;
+            flex: 1;
+        }
+        .sidebar {
+            width: 100%;
+            max-height: 200px;
+            background-color: #202020;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                width: 180px;
+                max-height: none;
+                flex-direction: column;
+                border-right: 1px solid #333;
+                border-bottom: none;
+                overflow-x: hidden;
+
+            }
+        }
+        .sidebar h3 {
+            font-size: 14px;
+            margin: 0 0 10px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            white-space: nowrap;
+        }
+        .sidebar-group {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        @media (min-width: 768px) {
+            .sidebar-group {
+                flex-direction: column;
+                padding: 5px;
+            }
+        }
+        .sidebar-button {
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: left;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+        .sidebar-button:hover {
+            background-color: #333;
+        }
+        /* Object panel styles updated */
+        .object-panel-container {
+            background-color: #202020;
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            max-height: 100vh;
+            overflow-y: auto;
+            width: 250px; /* Fixed Width */
+            box-sizing: border-box;
+             align-items: center; /* Center items horizontally */
+        }
+           @media (max-width: 767px){
+             .object-panel-container {
+                  max-height: 500px;
+                width: 100%;
+             }
+          }
+         .object-panel-container h3 {
+            font-size: 14px;
+            margin: 10px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            text-align: center; /* Center the title */
+            width: 100%; /* Ensure it takes full width of the container*/
+           margin-left: 0;
+        }
+       .object-list-container {
+            padding: 5px 10px;
+             display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 120px);
+           overflow-y: auto;
+           box-sizing: border-box;
+           align-items: center;
+           width: 100%;
+
+        }
+          .object-list-item{
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between; /* Keep buttons on the far right*/
+            align-items: center;
+            box-sizing: border-box;
+             width: 100%;
+            }
+        .object-list-item span{
+            margin-left: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;/* Push the name to the left */
+        }
+       .object-list-item button {
+             background: transparent;
+              border: none;
+             color: #fff;
+             cursor: pointer;
+           margin: 0 2px;
+             padding: 2px 5px;
+             font-size: 12px;
+       }
+          .object-list-item button:hover{
+                background: #333;
+         }
+
+        .object-list-item.selected {
+            background-color: #333;
+        }
+        .object-list-item:hover {
+            background-color: #333;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            position: relative;
+        }
+       .material-buttons-container {
+            display: flex;
+            flex-direction: column;
+             width: 100%;
+             box-sizing: border-box;
+             padding: 5px 10px;
+        }
+          .material-buttons-container h3{
+              font-size: 14px;
+             margin: 10px 0;
+            border-bottom: 1px solid #333;
+           padding-bottom: 5px;
+           text-align: center; /* Center the title */
+          width: 100%;
+           margin-left: 0;
+        }
+       .material-buttons {
+            display: flex;
+           flex-wrap: wrap;
+            gap: 5px;
+            box-sizing: border-box;
+            padding: 0 5px;
+
+        }
+        .material-buttons button{
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .material-buttons button:hover{
+            background-color: #333;
+        }
+        .texture-buttons{
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+             padding-left: 5px; /* Add padding to the group */
+        }
+        .texture-buttons button {
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .texture-buttons button:hover {
+            background-color: #333;
+        }
+        #code-editor {
+            width: 80%;
+            height: 80%;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        @media (max-width: 767px) {
+            #code-editor {
+                width: 95%;
+                height: 60%;
+            }
+        }
+        #code-editor:focus{
+            outline: none;
+        }
+        #code-editor-container {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #202020;
+            border: 1px solid #444;
+            padding: 10px;
+            z-index: 1000;
+        }
+        #code-editor-buttons{
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        #code-editor-buttons button {
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #code-editor-buttons button:hover {
+            background-color: #333;
+        }
+        #scene-settings-container {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #202020;
+            border: 1px solid #444;
+            padding: 10px;
+            z-index: 1000;
+        }
+        #scene-settings-container label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        #scene-settings-container input[type="color"]{
+            background-color: #333;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 5px;
+        }
+        #scene-settings-container button {
+            margin-top: 10px;
+        }
+        .transform-controls-buttons{
+            display: flex;
+            gap: 5px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .transform-controls-buttons button{
+            background-color: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .transform-controls-buttons button:hover{
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div>
+            <h3>Create</h3>
+            <div class="sidebar-group">
+                <button class="sidebar-button" onclick="addCube()"><i class="fas fa-cube"></i> Cube</button>
+                <button class="sidebar-button" onclick="addSphere()"><i class="fas fa-sphere"></i> Sphere</button>
+                <button class="sidebar-button" onclick="addTorus()"><i class="fas fa-ring"></i> Torus</button>
+                <button class="sidebar-button" onclick="addPlane()"><i class="fas fa-square"></i> Plane</button>
+            </div>
+        </div>
+        <div>
+            <h3>Lights</h3>
+            <div class="sidebar-group">
+                <button class="sidebar-button" onclick="addDirectionalLight()"><i class="fas fa-sun"></i> Directional</button>
+                <button class="sidebar-button" onclick="addPointLight()"><i class="fas fa-lightbulb"></i> Point</button>
+            </div>
+        </div>
+        <div>
+            <h3>Render</h3>
+            <div class="sidebar-group">
+                <button class="sidebar-button" onclick="toggleGridHelper()"><i class="fas fa-th"></i> Grid</button>
+                <button class="sidebar-button" onclick="openSceneSettings()"><i class="fas fa-cog"></i> Scene</button>
+            </div>
+        </div>
+        <div>
+            <h3>Model</h3>
+            <div class="sidebar-group">
+                <button class="sidebar-button" onclick="importOBJModel()"><i class="fas fa-file-import"></i> OBJ</button>
+            </div>
+        </div>
+    </aside>
+    <div class="main-content">
+        <header class="toolbar">
+            <div class="left-toolbar">
+                <div class="toolbar-group">
+                    <button class="icon-button" onclick="resetCamera()"><i class="fas fa-vector-square" style="transform: rotate(45deg)"></i></button>
+                    <button class="icon-button" onclick="fitCamera()"><i class="fas fa-vector-square"  style="transform: rotate(90deg)"></i></button>
+                    <button class="icon-button"><i class="fas fa-play"></i></button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="icon-button"><i class="fas fa-undo"></i></button>
+                    <button class="icon-button"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+            <div class="right-toolbar">
+                <span style="font-size:14px;">Object Mode</span>
+                <div class="settings-buttons">
+                    <button><i class="fas fa-chevron-right"></i></button>
+                    <button><i class="fas fa-eye"></i></button>
+                    <button><i class="fas fa-video"></i></button>
+                </div>
+                <div class="toolbar-group">
+                    <button class="icon-button"><i class="fas fa-arrow-left"></i></button>
+                    <button class="icon-button"><i class="fas fa-arrow-right"></i></button>
+                    <button class="icon-button"><i class="fas fa-bars"></i></button>
+                </div>
+            </div>
+        </header>
+        <div style="position: relative; flex: 1;">
+            <div id="scene-container"></div>
+            <div id="skybox-texture-importer" style="position: absolute; top: 10px; right: 10px; display: none">
+                <input type="file" id="skybox-texture-input" accept="image/*" onchange="loadSkyboxTexture()" style="color: #000; background-color: #fff"/>
+            </div>
+            <div class="transform-controls-buttons">
+                <button onclick="setTransformMode('translate')"><i class="fas fa-arrows-alt"></i></button>
+                <button onclick="setTransformMode('rotate')"><i class="fas fa-sync-alt"></i></button>
+                <button onclick="setTransformMode('scale')"><i class="fas fa-expand-arrows-alt"></i></button>
+            </div>
+        </div>
+        <footer class="status-bar">
+            <div style="display: flex; gap: 10px;">
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;"><i class="fas fa-clone"></i></button>
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;"><i class="fas fa-file"></i></button>
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px;"><i class="fas fa-eye"></i></button>
+                <button style="background-color: transparent; border: none; cursor: pointer; font-size: 14px; color: red;"><i class="fas fa-trash"></i></button>
+            </div>
+            <span>Rendered <span id="fps-counter">30</span> fps</span>
+        </footer>
+    </div>
+    <!-- Moved object list container to a separate sidebar -->
+    <aside class="object-panel-container">
+         <h3>Objects</h3>
+        <div class="object-list-container">
+             <ul id="object-list">
+            </ul>
+        </div>
+        <div class="material-buttons-container">
+           <h3>Materials</h3>
+           <div class="material-buttons">
+             <button onclick="changeMaterial('basic')">Basic</button>
+             <button onclick="changeMaterial('lambert')">Lambert</button>
+             <button onclick="changeMaterial('phong')">Phong</button>
+             </div>
+         </div>
+    </aside>
+    <div id="code-editor-container">
+        <textarea id="code-editor"></textarea>
+        <div id="code-editor-buttons">
+            <button onclick="saveCode()">Save</button>
+            <button onclick="closeCodeEditor()">Close</button>
+        </div>
+    </div>
+    <div id="scene-settings-container">
+        <label for="scene-background-color">Background Color</label>
+        <input type="color" id="scene-background-color" value="#252525">
+        <button onclick="changeBackgroundColor()">Apply Color</button>
+        <button onclick="closeSceneSettings()">Close</button>
+    </div>
+    <script src="js/three.min.js"></script>
+    <script src="js/orbitcontrols.js"></script>
+    <script src="js/OBJLoader.js"></script>
+    <script src="js/TransformControls.js"></script>
+    <script>
+              // Same script logic as before
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / 500, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const sceneContainer = document.getElementById('scene-container');
+        renderer.setSize(sceneContainer.offsetWidth, sceneContainer.offsetHeight);
+        sceneContainer.appendChild(renderer.domElement);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        camera.position.z = 5;
+        const objLoader = new THREE.OBJLoader();
+        let gridHelper = new THREE.GridHelper(10, 10);
+        scene.add(gridHelper);
+        let isGridVisible = true;
+        function toggleGridHelper() {
+            isGridVisible = !isGridVisible;
+            gridHelper.visible = isGridVisible;
+        }
+        const skyboxTextureImporter = document.getElementById('skybox-texture-importer');
+        function openSkyboxTextureImporter(){
+            skyboxTextureImporter.style.display = skyboxTextureImporter.style.display === 'none' ? 'block' : 'none';
+        }
+        function loadSkyboxTexture(){
+            const input = document.getElementById('skybox-texture-input');
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const texture = new THREE.TextureLoader().load(event.target.result);
+                scene.background = texture;
+            };
+            reader.readAsDataURL(file);
+            skyboxTextureImporter.style.display = 'none';
+        }
+        function fitCamera(){
+            if(!objects || objects.length === 0) return;
+            const box = new THREE.Box3().setFromObject(scene);
+            const size = box.getSize(new THREE.Vector3());
+            const center = box.getCenter(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraZ = Math.abs(maxDim / 4 * Math.tan( fov / 2));
+            camera.position.z = cameraZ + center.z;
+            controls.target.copy(center);
+            controls.update();
+        }
+        function resetCamera(){
+            camera.position.set(0, 0, 5);
+            controls.target.set(0,0,0);
+            controls.update();
+        }
+        let objects = [];
+        let selectedObject = null;
+        const objectList = document.getElementById('object-list');
+        function updateObjectList(){
+            objectList.innerHTML = '';
+            const allObjects = [...objects, ...scene.children.filter(child => child.isLight || child.type === 'Camera')];
+            allObjects.forEach((obj, index) => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('object-list-item');
+                const icon = obj.isLight ? '<i class="fas fa-lightbulb"></i>' : obj.type === 'Camera' ? '<i class="fas fa-video"></i>': '<i class="fas fa-cube"></i>';
+                listItem.innerHTML = `${icon} <span>${obj.name || `Object ${index + 1}`}</span>`;
+                listItem.addEventListener('click', () => {
+                    selectObject(obj);
+                });
+                if(obj === selectedObject){
+                    listItem.classList.add('selected');
+                }
+                const visibilityButton = document.createElement('button');
+                visibilityButton.innerHTML = obj.visible ? `<i class="fas fa-eye"></i>` : `<i class="fas fa-eye-slash"></i>`;
+                visibilityButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    obj.visible = !obj.visible;
+                    visibilityButton.innerHTML = obj.visible ? `<i class="fas fa-eye"></i>` : `<i class="fas fa-eye-slash"></i>`;
+                });
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'x';
+                deleteButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeObject(obj);
+                });
+                listItem.appendChild(visibilityButton);
+                listItem.appendChild(deleteButton);
+                objectList.appendChild(listItem);
+            });
+        }
+        function removeObject(obj) {
+            const index = objects.indexOf(obj);
+            if (index > -1) {
+                scene.remove(obj);
+                objects.splice(index, 1);
+                if(selectedObject === obj){
+                    selectedObject = null;
+                }
+                updateObjectList();
+            }
+            if(obj.isLight || obj.type === 'Camera'){
+                scene.remove(obj)
+                if(selectedObject === obj){
+                    selectedObject = null;
+                }
+                updateObjectList()
+            }
+        }
+        function selectObject(obj){
+            selectedObject = obj;
+            updateObjectList();
+            codeEditor.value = obj.script || '';
+            if(transformControls.object !== selectedObject)
+                transformControls.attach(selectedObject);
+        }
+        function addCube() {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.name = `Cube ${objects.length + 1}`;
+            scene.add(cube);
+            objects.push(cube);
+            updateObjectList();
+        }
+        function addSphere() {
+            const geometry = new THREE.SphereGeometry(0.7, 32, 32);
+            const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.name = `Sphere ${objects.length + 1}`;
+            scene.add(sphere);
+            objects.push(sphere);
+            updateObjectList();
+        }
+        function addTorus() {
+            const geometry = new THREE.TorusGeometry( 0.7, 0.2, 16, 100 );
+            const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+            const torus = new THREE.Mesh(geometry, material);
+            torus.name = `Torus ${objects.length + 1}`;
+            scene.add(torus);
+            objects.push(torus);
+            updateObjectList();
+        }
+        function addPlane() {
+            const geometry = new THREE.PlaneGeometry( 5, 5 );
+            const material = new THREE.MeshLambertMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide} );
+            const plane = new THREE.Mesh( geometry, material );
+            plane.name = `Plane ${objects.length + 1}`;
+            scene.add(plane);
+            objects.push(plane);
+            updateObjectList();
+        }
+        function addDirectionalLight() {
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(1, 1, 1).normalize();
+            light.name = 'Directional Light'
+            scene.add(light);
+            updateObjectList();
+        }
+        function addPointLight() {
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(2, 2, 2);
+            light.name = 'Point Light'
+            scene.add(light);
+            updateObjectList();
+        }
+         function changeMaterial(materialType){
+            if(!selectedObject) return;
+            let material;
+            if(materialType === 'basic'){
+                material = new THREE.MeshBasicMaterial({ color: selectedObject.material.color })
+            }
+            if(materialType === 'lambert'){
+                material = new THREE.MeshLambertMaterial({ color: selectedObject.material.color })
+            }
+            if(materialType === 'phong'){
+                material = new THREE.MeshPhongMaterial({ color: selectedObject.material.color });
+            }
+            selectedObject.material = material;
+        }
+       let albedoTexture = null;
+        let normalTexture = null;
+        function openAlbedoTextureImporter() {
+            document.getElementById('albedo-texture').click();
+        }
+        function openNormalTextureImporter() {
+            document.getElementById('normal-texture').click();
+        }
+        function loadTexture(textureType){
+            const input = document.getElementById(textureType + '-texture');
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const texture = new THREE.TextureLoader().load(event.target.result);
+                if(textureType === 'albedo'){
+                    albedoTexture = texture;
+                }else {
+                    normalTexture = texture;
+                }
+                if(selectedObject) {
+                    if (selectedObject.material.type === 'MeshBasicMaterial') {
+                        selectedObject.material = new THREE.MeshBasicMaterial({ map: albedoTexture });
+                    }
+                    else if (selectedObject.material.type === 'MeshLambertMaterial') {
+                        selectedObject.material = new THREE.MeshLambertMaterial({ map: albedoTexture, normalMap: normalTexture });
+                    }
+                    else if (selectedObject.material.type === 'MeshPhongMaterial') {
+                        selectedObject.material = new THREE.MeshPhongMaterial({ map: albedoTexture, normalMap: normalTexture });
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+        const codeEditorContainer = document.getElementById('code-editor-container')
+        const codeEditor = document.getElementById('code-editor');
+        function toggleCodeEditor(){
+            codeEditorContainer.style.display = codeEditorContainer.style.display === 'none' ? 'block' : 'none';
+        }
+        function saveCode(){
+            if(selectedObject){
+                selectedObject.script = codeEditor.value;
+            }
+            closeCodeEditor();
+        }
+        function closeCodeEditor(){
+            codeEditorContainer.style.display = 'none';
+        }
+        const sceneSettingsContainer = document.getElementById('scene-settings-container');
+        function openSceneSettings() {
+            sceneSettingsContainer.style.display = sceneSettingsContainer.style.display === 'none' ? 'block' : 'none';
+        }
+        function closeSceneSettings() {
+            sceneSettingsContainer.style.display = 'none';
+        }
+        function changeBackgroundColor(){
+            const color = document.getElementById('scene-background-color').value;
+            renderer.setClearColor(color);
+        }
+        function importOBJModel() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.obj';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if(file){
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        objLoader.load(event.target.result, (obj) => {
+                            obj.name = `OBJ ${objects.length + 1}`;
+                            scene.add(obj);
+                            objects.push(obj);
+                            updateObjectList();
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+        const transformControls = new THREE.TransformControls( camera, renderer.domElement );
+        scene.add( transformControls );
+        transformControls.addEventListener( 'dragging-changed', function ( event ) {
+            controls.enabled = ! event.value;
+        } );
+        function setTransformMode(mode){
+            transformControls.mode = mode;
+        }
+        scene.add(camera);
+        let lastTime = 0;
+        let frameCount = 0;
+        let fps = 30;
+        fitCamera();
+        sceneContainer.addEventListener('click', (event) => {
+            const mouse = new THREE.Vector2();
+            mouse.x = (event.clientX / sceneContainer.offsetWidth) * 2 - 1;
+            mouse.y = -(event.clientY / sceneContainer.offsetHeight) * 2 + 1;
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(objects);
+            if(intersects.length > 0){
+                selectObject(intersects[0].object);
+            }
+            else {
+                selectObject(null);
+            }
+        });
+        function animate(time) {
+            const deltaTime = (time - lastTime) / 1000;
+            lastTime = time;
+
+            if(selectedObject && selectedObject.script){
+                try{
+                    const animFunction = new Function('object', 'time', selectedObject.script);
+                    animFunction(selectedObject, time);
+                } catch(error){
+                    console.log(error);
+                }
+            }
+            controls.update();
+            frameCount++;
+            if(frameCount >= 10) {
+                fps =  Math.round(1 / deltaTime);
+                document.getElementById('fps-counter').textContent = fps;
+                frameCount = 0;
+            }
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
