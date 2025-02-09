@@ -380,6 +380,7 @@
         /**
          * @param {number} [fov=75]
          * @param {number} [near=0.1]
+         * @param {number} [far=1000]
          * @param {{x: number, y: number, z: number}} [position={ x: 3, y: 3, z: 5 }]
          */
         constructor(fov = 75, near = 0.1, far = 1000, position = { x: 3, y: 3, z: 5 }) {
