@@ -226,6 +226,27 @@
                 }
             });
         }
+        clearScene() {
+          // Remove todos os objetos da cena, exceto as luzes padrão
+          this.sceneManager.scene.children.forEach(child => {
+              if (child.type !== 'AmbientLight' && child.type !== 'DirectionalLight') {
+                  this.sceneManager.scene.remove(child);
+
+                  // Garante que os recursos sejam liberados
+                  if (child.geometry) child.geometry.dispose();
+                  if (child.material) {
+                      if (child.material.map) child.material.map.dispose();
+                      child.material.dispose();
+                  }
+              }
+          });
+
+          // Limpa o objeto selecionado
+          this.selectedObject = null;
+
+          // Limpa o world
+          this.world.objects = {};
+      }
 
         saveSceneToJson() {
             const sceneData = {
@@ -380,7 +401,6 @@
         /**
          * @param {number} [fov=75]
          * @param {number} [near=0.1]
-         * @param {number} [far=1000]
          * @param {{x: number, y: number, z: number}} [position={ x: 3, y: 3, z: 5 }]
          */
         constructor(fov = 75, near = 0.1, far = 1000, position = { x: 3, y: 3, z: 5 }) {
