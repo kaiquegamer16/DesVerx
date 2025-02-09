@@ -52,6 +52,7 @@
         <button onclick="saveScene()">Salvar Cena</button>
         <input type="file" id="fileInput" accept=".json">
         <button onclick="loadFile()">Carregar Cena</button>
+        <button onclick="clearScene()">Limpar Cena</button>
 
         <div>
             <input type="text" id="renameInput" placeholder="Novo nome">
@@ -59,7 +60,15 @@
         </div>
     </div>
 
+    <script src="engine.js"></script>
     <script>
+        const container = document.getElementById('container');
+        const engine = new Engine(container);
+
+        // Garante que a engine esteja inicializada antes de permitir o salvamento
+        window.myEngineInstance = engine;
+
+        // Definição das funções no escopo global
         function saveScene() {
             if (window.myEngineInstance) {
                 window.myEngineInstance.saveSceneToJson();
@@ -102,15 +111,14 @@
                 alert("Selecione um objeto primeiro.");
             }
         }
-    </script>
 
-    <script src="engine.js"></script>
-    <script>
-        const container = document.getElementById('container');
-        const engine = new Engine(container);
-
-        // Garante que a engine esteja inicializada antes de permitir o salvamento
-        window.myEngineInstance = engine;
+        function clearScene() {
+            if (window.myEngineInstance) {
+                window.myEngineInstance.clearScene();
+            } else {
+                console.error("Engine instance not available yet.");
+            }
+        }
 
         // Adiciona um cubo
         engine.addObject("cuboVerde", {
