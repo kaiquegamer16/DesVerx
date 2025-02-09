@@ -3,44 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Engine com Salvamento de Cena</title>
+    <title>Engine com Salvamento e Carregamento de Cena</title>
     <script src="https://unpkg.com/three@0.132.2/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; }
+        body { margin: 0; overflow: hidden; font-family: sans-serif; }
         #container { width: 100vw; height: 100vh; display: block; }
 
-        /* Estilo básico para o botão */
-        button {
+        #uiContainer {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 10px 20px;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
             background-color: #4CAF50;
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
-            z-index: 1; /* Garante que o botão esteja na frente do canvas */
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
             background-color: #3e8e41;
+        }
+
+        input[type="file"], #renameInput {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
     <div id="container"></div>
+
+    <div id="uiContainer">
+        <button onclick="saveScene()">Salvar Cena</button>
+        <input type="file" id="fileInput" accept=".json">
+        <button onclick="loadFile()">Carregar Cena</button>
+
+        <div>
+            <input type="text" id="renameInput" placeholder="Novo nome">
+            <button onclick="renameObject()">Renomear</button>
+        </div>
+    </div>
+
     <script>
-     function saveScene() {
-        if (window.myEngineInstance) {
-            window.myEngineInstance.saveSceneToJson();
-        } else {
-            console.error("Engine instance not available yet.");
+        function saveScene() {
+            if (window.myEngineInstance) {
+                window.myEngineInstance.saveSceneToJson();
+            } else {
+                console.error("Engine instance not available yet.");
+            }
         }
-    }
+
+        function loadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor, selecione um arquivo JSON.');
+                return; // Impede a execução se nenhum arquivo foi selecionado
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const json = e.target.result;
+                window.myEngineInstance.loadSceneFromJson(json);
+            };
+
+            reader.onerror = function(e) {
+                console.error("Erro ao ler o arquivo:", e);
+                alert("Ocorreu um erro ao ler o arquivo.");
+            };
+
+            reader.readAsText(file); // Inicia a leitura do arquivo
+        }
+
+        function renameObject() {
+            const newName = document.getElementById('renameInput').value;
+            if (window.myEngineInstance.selectedObject) {
+                window.myEngineInstance.selectedObject.name = newName;
+                console.log("Objeto renomeado para:", newName);
+                document.getElementById('renameInput').value = ""; // Limpa o campo
+            } else {
+                alert("Selecione um objeto primeiro.");
+            }
+        }
     </script>
-    <button onclick="saveScene()">Salvar Cena</button>
 
     <script src="engine.js"></script>
     <script>
@@ -52,6 +114,7 @@
 
         // Adiciona um cubo
         engine.addObject("cuboVerde", {
+            name: "Cubo Verde",
             type: "box",
             width: 1,
             height: 1,
@@ -63,12 +126,31 @@
 
         // Adiciona uma esfera
         engine.addObject("esferaVermelha", {
+            name: "Esfera Vermelha",
             type: "sphere",
             radius: 0.5,
             color: 0xff0000,
             position: { x: 2, y: 1, z: 0 },
             scale: { x: 1, y: 1, z: 1 }
         });
+
+        // Adiciona uma luz ambiente
+        engine.addObject("luzAmbiente", {
+            name: "Luz Ambiente Principal",
+            type: "ambientLight",
+            color: 0xffffff,
+            intensity: 0.5
+        });
+
+        // Adiciona uma luz direcional
+        engine.addObject("luzDirecional", {
+            name: "Luz Direcional Principal",
+            type: "directionalLight",
+            color: 0xffffff,
+            intensity: 1,
+            position: { x: 5, y: 5, z: 5 }
+        });
+
 
         // Carrega os objetos na cena
         engine.loadSceneFromData();
